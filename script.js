@@ -897,7 +897,7 @@ function setLanguage(language, { rerender = true } = {}) {
   updateFormState();
 
   if (rerender && petNameInput.value.trim() && birthDateInput.value) {
-    const values = Object.fromEntries(new FormData(form).entries());
+    const values = getFormValues();
     renderReading(buildReading(values, language), values, { scroll: false });
   } else if (currentState) {
     currentState.language = currentLanguage;
@@ -1054,6 +1054,77 @@ function getRhythmTitle(timeLabel) {
     : timeLabel;
 }
 
+function formatBirthTimeDraft(rawValue) {
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    return "";
+  }
+
+  const colonMatch = trimmed.match(/^(\d{0,2})(?::(\d{0,2}))?$/);
+  if (colonMatch) {
+    const hourText = colonMatch[1] || "";
+    const minuteText = colonMatch[2] || "";
+
+    if (!minuteText && trimmed.endsWith(":")) {
+      return `${hourText}:`;
+    }
+
+    return minuteText ? `${hourText}:${minuteText}` : hourText;
+  }
+
+  const digits = trimmed.replace(/\D/g, "").slice(0, 4);
+  if (!digits) {
+    return "";
+  }
+
+  if (digits.length <= 2) {
+    return digits;
+  }
+
+  if (digits.length === 3) {
+    return `${digits.slice(0, 1)}:${digits.slice(1)}`;
+  }
+
+  return `${digits.slice(0, 2)}:${digits.slice(2)}`;
+}
+
+function normalizeBirthTimeValue(rawValue) {
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    return "";
+  }
+
+  const match = trimmed.match(/^(\d{1,2})(?::?(\d{2}))$/);
+  if (!match) {
+    return "";
+  }
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+  if (Number.isNaN(hour) || Number.isNaN(minute)) {
+    return "";
+  }
+
+  return `${String(Math.min(Math.max(hour, 0), 23)).padStart(2, "0")}:${String(Math.min(Math.max(minute, 0), 59)).padStart(2, "0")}`;
+}
+
+function syncBirthTimeInput({ finalize = false } = {}) {
+  const nextValue = finalize
+    ? normalizeBirthTimeValue(birthTimeInput.value)
+    : formatBirthTimeDraft(birthTimeInput.value);
+
+  if (birthTimeInput.value !== nextValue) {
+    birthTimeInput.value = nextValue;
+  }
+}
+
+function getFormValues() {
+  syncBirthTimeInput({ finalize: true });
+  const values = Object.fromEntries(new FormData(form).entries());
+  values.birthTime = normalizeBirthTimeValue(values.birthTime || "");
+  return values;
+}
+
 function collectState(values) {
   return {
     language: currentLanguage,
@@ -1161,6 +1232,18 @@ breedSelect.addEventListener("change", () => {
 [petNameInput, birthDateInput].forEach((input) => {
   input.addEventListener("input", updateFormState);
   input.addEventListener("change", updateFormState);
+});
+
+birthTimeInput.addEventListener("input", () => {
+  syncBirthTimeInput();
+});
+
+birthTimeInput.addEventListener("blur", () => {
+  syncBirthTimeInput({ finalize: true });
+});
+
+birthTimeInput.addEventListener("change", () => {
+  syncBirthTimeInput({ finalize: true });
 });
 
 keywordButtons.forEach((button) => {
@@ -1967,11 +2050,11 @@ function restoreStateFromUrl() {
   petNameInput.value = params.get("name") || "";
   guardianNameInput.value = params.get("guardian") || "";
   birthDateInput.value = params.get("birth") || "";
-  birthTimeInput.value = params.get("time") || "";
+  birthTimeInput.value = normalizeBirthTimeValue(params.get("time") || "");
   setSelectedKeywords((params.get("keywords") || "").split(",").filter(Boolean));
   updateFormState();
 
-  const values = Object.fromEntries(new FormData(form).entries());
+  const values = getFormValues();
   if (!values.petName || !values.birthDate) {
     return;
   }
@@ -1982,7 +2065,7 @@ function restoreStateFromUrl() {
 form.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  const values = Object.fromEntries(new FormData(form).entries());
+  const values = getFormValues();
   if (!values.petName || !values.birthDate) {
     return;
   }

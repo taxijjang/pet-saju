@@ -177,7 +177,16 @@
 
                 <label class="field">
                   <span class="field-label" data-i18n="form.birthTimeLabel">태어난 시간</span>
-                  <input type="time" id="birth-time" name="birthTime">
+                  <input
+                    type="text"
+                    id="birth-time"
+                    name="birthTime"
+                    inputmode="numeric"
+                    maxlength="5"
+                    autocomplete="off"
+                    placeholder="예: 08:10"
+                    data-i18n-placeholder="form.birthTimePlaceholder"
+                  >
                   <small data-i18n="form.birthTimeHint">모르면 비워도 괜찮아요.</small>
                 </label>
               </div>
