@@ -30,6 +30,7 @@ const keywordCount = document.querySelector("#keyword-count");
 const formStatus = document.querySelector("#form-status");
 const typeName = document.querySelector("#type-name");
 const typeCaption = document.querySelector("#type-caption");
+const rhythmTitle = document.querySelector("#rhythm-title");
 const rhythmBody = document.querySelector("#rhythm-body");
 const temperamentBody = document.querySelector("#temperament-body");
 const chemistryBody = document.querySelector("#chemistry-body");
@@ -1452,6 +1453,7 @@ function renderReading(reading, values, options = {}) {
   renderSnapshotTags(reading.snapshotTags);
   typeName.textContent = reading.archetype;
   typeCaption.textContent = reading.typeSummary;
+  rhythmTitle.textContent = reading.timeLabel === "시간 미상" ? "차분한 기본 리듬" : `${reading.timeLabel} 리듬`;
   rhythmBody.textContent = reading.rhythm;
   temperamentBody.textContent = reading.temperament;
   chemistryBody.textContent = reading.chemistry;
