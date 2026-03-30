@@ -800,6 +800,10 @@ function shortLabel(label) {
   return label.replace(" 기운", "");
 }
 
+function getRhythmTitle(timeLabel) {
+  return timeLabel === "시간 미상" ? "차분한 기본 리듬" : `${timeLabel} 리듬`;
+}
+
 function collectState(values) {
   return {
     petType: values.petType,
@@ -1119,41 +1123,143 @@ function loadImage(src) {
   });
 }
 
+function measureInfoCardHeight(ctx, width, card) {
+  const innerWidth = width - 68;
+  let height = 36;
+
+  ctx.font = '28px "Jua", sans-serif';
+  height += 30;
+
+  if (card.title) {
+    height += 14;
+    ctx.font = '44px "Jua", sans-serif';
+    height += getWrappedLines(ctx, card.title, innerWidth, 2).length * 52;
+  }
+
+  height += 18;
+  ctx.font = '27px "Gowun Dodum", sans-serif';
+  height += getWrappedLines(ctx, card.body, innerWidth).length * 40;
+  height += 34;
+
+  return Math.max(height, card.minHeight || 0);
+}
+
+function drawInfoCard(ctx, x, y, width, height, card) {
+  fillRoundedRect(ctx, x, y, width, height, 28, card.fill);
+  strokeRoundedRect(ctx, x, y, width, height, 28, "rgba(47, 38, 31, 0.08)");
+
+  ctx.fillStyle = "#ff6b45";
+  ctx.font = '28px "Jua", sans-serif';
+  ctx.fillText(card.label, x + 34, y + 48);
+
+  let cursorY = y + 82;
+
+  if (card.title) {
+    ctx.fillStyle = "#2f261f";
+    ctx.font = '44px "Jua", sans-serif';
+    cursorY = drawWrappedText(ctx, card.title, x + 34, cursorY, width - 68, 52, 2);
+    cursorY += 12;
+  }
+
+  ctx.fillStyle = "#4f4338";
+  ctx.font = '27px "Gowun Dodum", sans-serif';
+  drawWrappedText(ctx, card.body, x + 34, cursorY, width - 68, 40);
+}
+
 async function buildExportCanvas(reading) {
   const canvas = document.createElement("canvas");
   canvas.width = 1200;
   canvas.height = 1600;
   let ctx = canvas.getContext("2d");
   const pillItems = [reading.primaryLabel, reading.secondaryLabel, ...reading.snapshotTags].slice(0, 6);
-  const cards = [
-    {
-      title: "한눈에 보는 기질",
-      body: `${reading.snapshotHeadline}. ${reading.snapshotBody}`,
-      fill: "rgba(255, 244, 214, 0.9)"
-    },
-    {
-      title: "타고난 성향",
-      body: reading.temperament,
-      fill: "rgba(255, 255, 255, 0.88)"
-    },
-    {
-      title: "집사와의 케미",
-      body: reading.chemistry,
-      fill: "rgba(240, 251, 248, 0.92)"
-    },
-    {
-      title: "행운 포인트",
-      body: reading.luck,
-      fill: "rgba(255, 244, 236, 0.9)"
-    }
+  const wideCardWidth = 976;
+  const columnGap = 18;
+  const columnWidth = (wideCardWidth - columnGap) / 2;
+  const cardRows = [
+    [
+      {
+        label: "사주 타입",
+        title: reading.archetype,
+        body: reading.typeSummary,
+        fill: "rgba(255, 244, 214, 0.9)",
+        minHeight: 220
+      },
+      {
+        label: "기분 리듬",
+        title: getRhythmTitle(reading.timeLabel),
+        body: reading.rhythm,
+        fill: "rgba(240, 251, 248, 0.92)",
+        minHeight: 220
+      }
+    ],
+    [
+      {
+        label: "타고난 성향",
+        body: reading.temperament,
+        fill: "rgba(255, 255, 255, 0.92)",
+        minHeight: 228
+      },
+      {
+        label: "집사와의 케미",
+        body: reading.chemistry,
+        fill: "rgba(255, 255, 255, 0.92)",
+        minHeight: 228
+      }
+    ],
+    [
+      {
+        label: "하루 루틴 힌트",
+        body: reading.routine,
+        fill: "rgba(255, 248, 238, 0.94)",
+        minHeight: 228
+      },
+      {
+        label: "돌봄 포인트",
+        body: reading.care,
+        fill: "rgba(245, 250, 255, 0.94)",
+        minHeight: 228
+      }
+    ]
   ];
+  const snapshotCard = {
+    label: "한눈에 보는 기질",
+    title: reading.snapshotHeadline,
+    body: `${reading.snapshotBody} 태그: ${reading.snapshotTags.join(" · ")}.`,
+    fill: "rgba(255, 249, 228, 0.94)",
+    minHeight: 210
+  };
+  const luckCard = {
+    label: "행운 포인트",
+    body: reading.luck,
+    fill: "rgba(255, 244, 236, 0.92)",
+    minHeight: 206
+  };
 
   ctx.font = '30px "Gowun Dodum", sans-serif';
   const summaryBottom = 426 + getWrappedLines(ctx, reading.summary, 940, 4).length * 46;
   ctx.font = '24px "Gowun Dodum", sans-serif';
   const pillsBottom = summaryBottom + 28 + measurePillsHeight(ctx, pillItems, 940);
-  const cardsStartY = pillsBottom + 34;
-  const footerY = cardsStartY + cards.length * 228 + 24;
+  const contentStartY = pillsBottom + 34;
+
+  const snapshotHeight = measureInfoCardHeight(ctx, wideCardWidth, snapshotCard);
+  const cardRowHeights = cardRows.map((row) =>
+    Math.max(
+      measureInfoCardHeight(ctx, columnWidth, row[0]),
+      measureInfoCardHeight(ctx, columnWidth, row[1])
+    )
+  );
+  const luckHeight = measureInfoCardHeight(ctx, wideCardWidth, luckCard);
+  ctx.font = '31px "Gowun Dodum", sans-serif';
+  const charmHeight = 48 + 24 + getWrappedLines(ctx, reading.charm, 908).length * 42 + 36;
+
+  const footerY =
+    contentStartY +
+    snapshotHeight +
+    18 +
+    cardRowHeights.reduce((total, rowHeight) => total + rowHeight, 0) +
+    18 * cardRows.length +
+    luckHeight +
+    24;
   const canvasHeight = Math.max(1760, footerY + 216);
 
   canvas.height = canvasHeight;
@@ -1230,21 +1336,19 @@ async function buildExportCanvas(reading) {
 
   cursorY += 34;
 
-  cards.forEach((card, index) => {
-    const cardY = cursorY + index * 228;
-    fillRoundedRect(ctx, 112, cardY, 976, 196, 28, card.fill);
-    strokeRoundedRect(ctx, 112, cardY, 976, 196, 28, "rgba(47, 38, 31, 0.08)");
+  drawInfoCard(ctx, 112, cursorY, wideCardWidth, snapshotHeight, snapshotCard);
+  cursorY += snapshotHeight + 18;
 
-    ctx.fillStyle = "#ff6b45";
-    ctx.font = '28px "Jua", sans-serif';
-    ctx.fillText(card.title, 146, cardY + 52);
-
-    ctx.fillStyle = "#4f4338";
-    ctx.font = '27px "Gowun Dodum", sans-serif';
-    drawWrappedText(ctx, card.body, 146, cardY + 96, 908, 40, 3);
+  cardRows.forEach((row, index) => {
+    const rowHeight = cardRowHeights[index];
+    drawInfoCard(ctx, 112, cursorY, columnWidth, rowHeight, row[0]);
+    drawInfoCard(ctx, 112 + columnWidth + columnGap, cursorY, columnWidth, rowHeight, row[1]);
+    cursorY += rowHeight + 18;
   });
 
-  fillRoundedRect(ctx, 112, footerY, 976, 156, 32, "rgba(47, 38, 31, 0.92)");
+  drawInfoCard(ctx, 112, cursorY, wideCardWidth, luckHeight, luckCard);
+
+  fillRoundedRect(ctx, 112, footerY, 976, charmHeight, 32, "rgba(47, 38, 31, 0.92)");
 
   ctx.fillStyle = "#ffd980";
   ctx.font = '24px "Jua", sans-serif';
@@ -1252,7 +1356,7 @@ async function buildExportCanvas(reading) {
 
   ctx.fillStyle = "#fff8ef";
   ctx.font = '31px "Gowun Dodum", sans-serif';
-  drawWrappedText(ctx, reading.charm, 146, footerY + 92, 908, 42, 2);
+  drawWrappedText(ctx, reading.charm, 146, footerY + 92, 908, 42);
 
   return canvas;
 }
