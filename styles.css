@@ -132,6 +132,12 @@ button {
   color: var(--coral-deep) !important;
 }
 
+@media (min-width: 681px) {
+  .hero-copy h1 .hero-line {
+    white-space: nowrap;
+  }
+}
+
 .hero-text,
 .mini-caption,
 .block-body,
