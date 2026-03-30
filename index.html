@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-      href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
       rel="stylesheet"
     >
     <script
@@ -49,7 +49,7 @@
       <main class="page">
         <section class="hero panel">
           <div class="hero-copy">
-            <div class="brand-lockup" aria-label="댕냥 사주">
+            <div class="brand-lockup" aria-label="댕냥 사주" data-i18n-aria-label="brand.aria">
               <div class="brand-mark" aria-hidden="true">
                 <svg viewBox="0 0 88 88" role="presentation">
                   <defs>
@@ -70,44 +70,51 @@
                 </svg>
               </div>
               <div class="brand-copy">
-                <p class="brand-kicker">DANGNYANG</p>
+                <p class="brand-kicker">DANGNYANG SAJU</p>
                 <p class="brand-name">댕냥 사주</p>
-                <p class="brand-subtitle">강아지와 고양이를 위한 사주 카드</p>
+                <p class="brand-subtitle" data-i18n="brand.subtitle">강아지와 고양이를 위한 사주 카드</p>
               </div>
-              <span class="brand-chip">강아지 · 고양이</span>
+              <div class="brand-tools">
+                <span class="brand-chip" data-i18n="brand.chip">강아지 · 고양이</span>
+                <div class="language-switcher" role="group" aria-label="언어 선택" data-i18n-aria-label="lang.switcher">
+                  <button type="button" class="lang-button" data-lang="ko">KO</button>
+                  <button type="button" class="lang-button" data-lang="en">EN</button>
+                  <button type="button" class="lang-button" data-lang="ja">JA</button>
+                </div>
+              </div>
             </div>
             <h1>
               <span class="hero-line">
-                <span class="hero-base">우리 집 </span><span class="hero-highlight">강아지와</span>
+                <span class="hero-base" data-i18n="hero.line1Base">우리 집 </span><span class="hero-highlight" data-i18n="hero.line1Highlight">강아지와</span>
               </span>
               <span class="hero-line">
-                <span class="hero-highlight">고양이의</span><span class="hero-base"> 타고난 기운을</span>
+                <span class="hero-highlight" data-i18n="hero.line2Highlight">고양이의</span><span class="hero-base" data-i18n="hero.line2Base"> 타고난 기운을</span>
               </span>
-              <span class="hero-line hero-base">가볍고 사랑스럽게</span>
+              <span class="hero-line hero-base" data-i18n="hero.line3">가볍고 사랑스럽게</span>
             </h1>
-            <p class="hero-text">
+            <p class="hero-text" data-i18n="hero.text">
               생일과 성격 키워드를 바탕으로 반려동물의 타고난 기질, 성향, 집사와의 케미를
               귀엽게 풀어드립니다. 정통 역술 서비스라기보다 즐겁게 보는 작은 사주 카드에
               가까워요.
             </p>
-            <div class="hero-tags" aria-label="안내 태그">
-              <span>강아지</span>
-              <span>고양이</span>
-              <span>기질 해석</span>
-              <span>집사 궁합</span>
+            <div class="hero-tags" aria-label="안내 태그" data-i18n-aria-label="hero.tagsAria">
+              <span data-i18n="hero.tag1">강아지</span>
+              <span data-i18n="hero.tag2">고양이</span>
+              <span data-i18n="hero.tag3">기질 해석</span>
+              <span data-i18n="hero.tag4">집사 궁합</span>
             </div>
           </div>
 
           <div class="hero-note">
             <div class="note-card">
-              <p class="note-label">이런 방식으로 보여드려요</p>
+              <p class="note-label" data-i18n="note.label">이런 방식으로 보여드려요</p>
               <ul>
-                <li>타고난 핵심 기운 2가지</li>
-                <li>아이의 기본 성향과 감정 리듬</li>
-                <li>행운 간식, 산책 포인트, 낮잠 스팟</li>
+                <li data-i18n="note.item1">타고난 핵심 기운 2가지</li>
+                <li data-i18n="note.item2">아이의 기본 성향과 감정 리듬</li>
+                <li data-i18n="note.item3">행운 간식, 산책 포인트, 낮잠 스팟</li>
               </ul>
             </div>
-            <p class="mini-caption">
+            <p class="mini-caption" data-i18n="note.caption">
               입력한 정보는 저장되지 않고 브라우저 안에서만 계산됩니다.
             </p>
           </div>
@@ -117,20 +124,20 @@
           <form class="panel form-panel" id="saju-form">
             <div class="section-heading">
               <div>
-                <p class="eyebrow">댕냥 사주 프로필</p>
-                <h2>우리 아이 정보</h2>
+                <p class="eyebrow" data-i18n="form.eyebrow">댕냥 사주 프로필</p>
+                <h2 data-i18n="form.title">우리 아이 정보</h2>
               </div>
-              <button class="ghost-button" type="button" id="sample-button">샘플로 채우기</button>
+              <button class="ghost-button" type="button" id="sample-button" data-i18n="form.sample">샘플로 채우기</button>
             </div>
 
             <div class="field-stack">
               <div class="field">
-                <span class="field-label">반려동물 종류</span>
-                <div class="pet-toggle" role="radiogroup" aria-label="반려동물 종류 선택">
-                  <button type="button" class="pet-option active" data-type="dog" aria-pressed="true">
+                <span class="field-label" data-i18n="form.petTypeLabel">반려동물 종류</span>
+                <div class="pet-toggle" role="radiogroup" aria-label="반려동물 종류 선택" data-i18n-aria-label="form.petTypeAria">
+                  <button type="button" class="pet-option active" data-type="dog" aria-pressed="true" data-i18n="form.petTypeDog">
                     강아지
                   </button>
-                  <button type="button" class="pet-option" data-type="cat" aria-pressed="false">
+                  <button type="button" class="pet-option" data-type="cat" aria-pressed="false" data-i18n="form.petTypeCat">
                     고양이
                   </button>
                 </div>
@@ -139,45 +146,45 @@
 
               <div class="field-grid">
                 <label class="field">
-                  <span class="field-label">아이 이름</span>
-                  <input type="text" id="pet-name" name="petName" placeholder="예: 복실이" required>
+                  <span class="field-label" data-i18n="form.petNameLabel">아이 이름</span>
+                  <input type="text" id="pet-name" name="petName" placeholder="예: 복실이" data-i18n-placeholder="form.petNamePlaceholder" required>
                 </label>
 
                 <label class="field">
-                  <span class="field-label">집사 이름</span>
-                  <input type="text" id="guardian-name" name="guardianName" placeholder="예: 지은">
+                  <span class="field-label" data-i18n="form.guardianNameLabel">집사 이름</span>
+                  <input type="text" id="guardian-name" name="guardianName" placeholder="예: 지은" data-i18n-placeholder="form.guardianNamePlaceholder">
                 </label>
               </div>
 
               <label class="field">
-                <span class="field-label">품종 또는 계열</span>
-                <select id="breed-select" name="breed" aria-label="품종 또는 계열 선택"></select>
-                <small id="breed-hint">믹스라면 가장 비슷한 느낌으로 골라도 괜찮아요.</small>
+                <span class="field-label" data-i18n="form.breedLabel">품종 또는 계열</span>
+                <select id="breed-select" name="breed" aria-label="품종 또는 계열 선택" data-i18n-aria-label="form.breedAria"></select>
+                <small id="breed-hint" data-i18n="form.breedHint">믹스라면 가장 비슷한 느낌으로 골라도 괜찮아요.</small>
               </label>
 
               <div class="profile-helper" id="breed-card">
-                <p class="helper-label">선택한 품종 포인트</p>
+                <p class="helper-label" data-i18n="form.breedHelperLabel">선택한 품종 포인트</p>
                 <p class="helper-title" id="breed-name-preview"></p>
                 <p class="helper-copy" id="breed-copy"></p>
               </div>
 
               <div class="field-grid">
                 <label class="field">
-                  <span class="field-label">생일</span>
+                  <span class="field-label" data-i18n="form.birthDateLabel">생일</span>
                   <input type="date" id="birth-date" name="birthDate" required>
-                  <small>양력 날짜로 입력해도 괜찮아요.</small>
+                  <small data-i18n="form.birthDateHint">양력 날짜로 입력해도 괜찮아요.</small>
                 </label>
 
                 <label class="field">
-                  <span class="field-label">태어난 시간</span>
+                  <span class="field-label" data-i18n="form.birthTimeLabel">태어난 시간</span>
                   <input type="time" id="birth-time" name="birthTime">
-                  <small>모르면 비워도 괜찮아요.</small>
+                  <small data-i18n="form.birthTimeHint">모르면 비워도 괜찮아요.</small>
                 </label>
               </div>
 
               <div class="field">
                 <div class="field-label-row">
-                  <span class="field-label">성격 키워드</span>
+                  <span class="field-label" data-i18n="form.keywordLabel">성격 키워드</span>
                   <span class="keyword-count" id="keyword-count">0 / 3 선택</span>
                 </div>
                 <div class="keyword-grid" id="keyword-grid">
@@ -198,12 +205,12 @@
                   <button type="button" class="keyword-chip" data-keyword="호불호뚜렷">호불호뚜렷</button>
                   <button type="button" class="keyword-chip" data-keyword="섬세함">섬세함</button>
                 </div>
-                <small>최대 3개까지 고를 수 있어요.</small>
+                <small data-i18n="form.keywordHint">최대 3개까지 고를 수 있어요.</small>
               </div>
 
               <div class="form-footer">
-                <p class="status-note" id="form-status">이름과 생일을 입력하면 버튼이 활성화돼요.</p>
-                <button class="cta-button" type="submit" id="submit-button" disabled>사주 카드 보기</button>
+                <p class="status-note" id="form-status" data-i18n="form.statusIdle">이름과 생일을 입력하면 버튼이 활성화돼요.</p>
+                <button class="cta-button" type="submit" id="submit-button" data-i18n="form.submit" disabled>사주 카드 보기</button>
               </div>
             </div>
           </form>
@@ -211,19 +218,19 @@
           <section class="panel result-panel" aria-live="polite">
             <div class="section-heading">
               <div>
-                <p class="eyebrow">댕냥 사주 카드</p>
-                <h2>결과</h2>
+                <p class="eyebrow" data-i18n="result.eyebrow">댕냥 사주 카드</p>
+                <h2 data-i18n="result.title">결과</h2>
               </div>
               <div class="result-actions hidden" id="result-actions">
-                <button class="ghost-button" type="button" id="copy-button">요약 복사</button>
-                <button class="ghost-button" type="button" id="share-button">공유 링크</button>
-                <button class="ghost-button warm" type="button" id="export-button">이미지 저장</button>
+                <button class="ghost-button" type="button" id="copy-button" data-i18n="actions.copy">요약 복사</button>
+                <button class="ghost-button" type="button" id="share-button" data-i18n="actions.share">공유 링크</button>
+                <button class="ghost-button warm" type="button" id="export-button" data-i18n="actions.export">이미지 저장</button>
               </div>
             </div>
 
             <div class="result-placeholder" id="result-placeholder">
-              <p class="placeholder-title">사주 카드를 기다리는 중</p>
-              <p>
+              <p class="placeholder-title" data-i18n="result.placeholderTitle">사주 카드를 기다리는 중</p>
+              <p data-i18n="result.placeholderBody">
                 아이 이름과 생일을 입력하면 이곳에 기질 요약, 성향 타입, 생활 해석, 행운 포인트가
                 채워집니다.
               </p>
@@ -241,7 +248,7 @@
 
               <div class="snapshot-card">
                 <div class="snapshot-header">
-                  <span>한눈에 보는 기질</span>
+                  <span data-i18n="result.snapshot">한눈에 보는 기질</span>
                   <strong id="snapshot-headline"></strong>
                 </div>
                 <p class="snapshot-body" id="snapshot-body"></p>
@@ -250,12 +257,12 @@
 
               <div class="type-strip">
                 <article class="type-card">
-                  <p class="block-label">사주 타입</p>
+                  <p class="block-label" data-i18n="result.type">사주 타입</p>
                   <h4 id="type-name"></h4>
                   <p class="block-body" id="type-caption"></p>
                 </article>
                 <article class="type-card soft">
-                  <p class="block-label">기분 리듬</p>
+                  <p class="block-label" data-i18n="result.rhythm">기분 리듬</p>
                   <h4 id="rhythm-title"></h4>
                   <p class="block-body" id="rhythm-body"></p>
                 </article>
@@ -263,27 +270,27 @@
 
               <div class="result-grid">
                 <article class="result-block">
-                  <p class="block-label">타고난 성향</p>
+                  <p class="block-label" data-i18n="result.temperament">타고난 성향</p>
                   <p class="block-body" id="temperament-body"></p>
                 </article>
                 <article class="result-block">
-                  <p class="block-label">집사와의 케미</p>
+                  <p class="block-label" data-i18n="result.chemistry">집사와의 케미</p>
                   <p class="block-body" id="chemistry-body"></p>
                 </article>
                 <article class="result-block">
-                  <p class="block-label">하루 루틴 힌트</p>
+                  <p class="block-label" data-i18n="result.routine">하루 루틴 힌트</p>
                   <p class="block-body" id="routine-body"></p>
                 </article>
                 <article class="result-block">
-                  <p class="block-label">돌봄 포인트</p>
+                  <p class="block-label" data-i18n="result.care">돌봄 포인트</p>
                   <p class="block-body" id="care-body"></p>
                 </article>
                 <article class="result-block">
-                  <p class="block-label">행운 포인트</p>
+                  <p class="block-label" data-i18n="result.luck">행운 포인트</p>
                   <p class="block-body" id="luck-body"></p>
                 </article>
                 <article class="result-block highlight">
-                  <p class="block-label">오늘의 한 줄 부적</p>
+                  <p class="block-label" data-i18n="result.charm">오늘의 한 줄 부적</p>
                   <p class="block-body" id="charm-body"></p>
                 </article>
               </div>
@@ -293,6 +300,10 @@
       </main>
     </div>
 
+    <script src="./translations.js"></script>
+    <script src="./translations-data.js"></script>
+    <script src="./translations-breeds.js"></script>
+    <script src="./translations-elements.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>

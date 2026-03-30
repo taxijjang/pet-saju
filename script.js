@@ -2,6 +2,7 @@ const form = document.querySelector("#saju-form");
 const petTypeInput = document.querySelector("#pet-type");
 const petOptions = document.querySelectorAll(".pet-option");
 const keywordButtons = document.querySelectorAll(".keyword-chip");
+const languageButtons = document.querySelectorAll(".lang-button");
 const sampleButton = document.querySelector("#sample-button");
 const resultActions = document.querySelector("#result-actions");
 const copyButton = document.querySelector("#copy-button");
@@ -40,16 +41,34 @@ const luckBody = document.querySelector("#luck-body");
 const charmBody = document.querySelector("#charm-body");
 
 const keywordLimit = 3;
+const supportedLanguages = ["ko", "en", "ja"];
 const selectedKeywords = new Set();
 let currentReading = null;
 let currentState = null;
-const buttonDefaultLabels = new Map([
-  [copyButton, "요약 복사"],
-  [shareButton, "공유 링크"],
-  [exportButton, "이미지 저장"]
-]);
+let currentLanguage = "ko";
+const buttonDefaultLabels = new Map();
 const siteUrl = "https://pet-saju.pages.dev/";
 const exportQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=${encodeURIComponent(siteUrl)}`;
+const i18n = window.DANGNYANG_I18N;
+const translatableNodes = document.querySelectorAll("[data-i18n]");
+const translatablePlaceholderNodes = document.querySelectorAll("[data-i18n-placeholder]");
+const translatableAriaNodes = document.querySelectorAll("[data-i18n-aria-label]");
+const pageDescriptionMeta = document.querySelector('meta[name="description"]');
+const ogLocaleMeta = document.querySelector('meta[property="og:locale"]');
+const ogSiteNameMeta = document.querySelector('meta[property="og:site_name"]');
+const ogTitleMeta = document.querySelector('meta[property="og:title"]');
+const ogDescriptionMeta = document.querySelector('meta[property="og:description"]');
+const ogImageAltMeta = document.querySelector('meta[property="og:image:alt"]');
+const twitterTitleMeta = document.querySelector('meta[name="twitter:title"]');
+const twitterDescriptionMeta = document.querySelector('meta[name="twitter:description"]');
+
+const breedGroupKeys = {
+  "소형견": "dogSmall",
+  "중형견": "dogMedium",
+  "대형견": "dogLarge",
+  "대표 묘종": "catBreed",
+  "믹스/기타": "mixed"
+};
 
 const breedCatalog = {
   dog: [
@@ -661,6 +680,231 @@ const timeProfiles = {
   }
 };
 
+function getCopy(language = currentLanguage) {
+  return i18n.uiCopy[language] || i18n.uiCopy.ko;
+}
+
+function getTranslationValue(source, path) {
+  return path.split(".").reduce((value, key) => value?.[key], source);
+}
+
+function determineInitialLanguage() {
+  const params = new URLSearchParams(window.location.search);
+  const fromUrl = params.get("lang");
+  if (supportedLanguages.includes(fromUrl)) {
+    return fromUrl;
+  }
+
+  try {
+    const storedLanguage = window.localStorage.getItem("dangnyang-language");
+    if (supportedLanguages.includes(storedLanguage)) {
+      return storedLanguage;
+    }
+  } catch (error) {
+    // Ignore storage access issues.
+  }
+
+  const browserLanguage = (navigator.language || "").toLowerCase();
+  if (browserLanguage.startsWith("ja")) return "ja";
+  if (browserLanguage.startsWith("en")) return "en";
+  return "ko";
+}
+
+function syncButtonDefaultLabels() {
+  buttonDefaultLabels.set(copyButton, getCopy().actions.copy);
+  buttonDefaultLabels.set(shareButton, getCopy().actions.share);
+  buttonDefaultLabels.set(exportButton, getCopy().actions.export);
+}
+
+function updateMetaTags() {
+  const copy = getCopy();
+  const localeMeta = i18n.localeMeta[currentLanguage] || i18n.localeMeta.ko;
+
+  document.documentElement.lang = localeMeta.htmlLang;
+  document.title = copy.pageTitle;
+  pageDescriptionMeta.content = copy.pageDescription;
+  ogLocaleMeta.content = localeMeta.ogLocale;
+  ogSiteNameMeta.content = copy.ogSiteName;
+  ogTitleMeta.content = copy.ogTitle;
+  ogDescriptionMeta.content = copy.ogDescription;
+  ogImageAltMeta.content = copy.ogImageAlt;
+  twitterTitleMeta.content = copy.ogTitle;
+  twitterDescriptionMeta.content = copy.ogDescription;
+}
+
+function applyStaticTranslations() {
+  const copy = getCopy();
+
+  translatableNodes.forEach((node) => {
+    const value = getTranslationValue(copy, node.dataset.i18n);
+    if (typeof value === "string") {
+      node.textContent = value;
+    }
+  });
+
+  translatablePlaceholderNodes.forEach((node) => {
+    const value = getTranslationValue(copy, node.dataset.i18nPlaceholder);
+    if (typeof value === "string") {
+      node.placeholder = value;
+    }
+  });
+
+  translatableAriaNodes.forEach((node) => {
+    const value = getTranslationValue(copy, node.dataset.i18nAriaLabel);
+    if (typeof value === "string") {
+      node.setAttribute("aria-label", value);
+    }
+  });
+
+  const heroTags = copy.hero.tags;
+  document.querySelectorAll(".hero-tags span").forEach((node, index) => {
+    node.textContent = heroTags[index];
+  });
+
+  document.querySelectorAll(".note-card li").forEach((node, index) => {
+    node.textContent = copy.note.items[index];
+  });
+
+  syncButtonDefaultLabels();
+}
+
+function updateLanguageButtons() {
+  languageButtons.forEach((button) => {
+    const isActive = button.dataset.lang === currentLanguage;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+}
+
+function getPetLabel(type, language = currentLanguage) {
+  if (language === "ko") {
+    return petLabels[type];
+  }
+
+  return i18n.petLabels[language][type];
+}
+
+function getKeywordProfile(keyword, language = currentLanguage) {
+  if (language === "ko") {
+    return {
+      label: keyword,
+      trait: keywordProfiles[keyword].trait,
+      care: keywordProfiles[keyword].care
+    };
+  }
+
+  return i18n.keywordTranslations[language][keyword];
+}
+
+function getKeywordLabel(keyword, language = currentLanguage) {
+  return getKeywordProfile(keyword, language).label;
+}
+
+function getBreedProfileLocalized(type, value, language = currentLanguage) {
+  const baseBreed = getBreedProfile(type, value);
+  if (language === "ko") {
+    return { ...baseBreed, preview: `${baseBreed.personality} ${baseBreed.routine}`, groupKey: breedGroupKeys[baseBreed.group] };
+  }
+
+  const translatedBreed = i18n.breedTranslations[language][baseBreed.value];
+  return {
+    ...baseBreed,
+    ...translatedBreed,
+    group: i18n.breedGroupLabels[language][translatedBreed.groupKey]
+  };
+}
+
+function getElementProfileLocalized(name, language = currentLanguage) {
+  if (language === "ko") {
+    return {
+      ...elementMeaning[name],
+      short: shortLabel(elementMeaning[name].label)
+    };
+  }
+
+  return i18n.elementTranslations[language][name];
+}
+
+function getTimeProfileKey(time) {
+  if (!time) {
+    return "unknown";
+  }
+
+  const [hour] = time.split(":").map(Number);
+  if (hour < 5) return "night";
+  if (hour < 8) return "dawn";
+  if (hour < 12) return "morning";
+  if (hour < 17) return "afternoon";
+  if (hour < 21) return "evening";
+  return "night";
+}
+
+function getTimeProfileLocalized(key, language = currentLanguage) {
+  if (language === "ko") {
+    return timeProfiles[key];
+  }
+
+  return i18n.timeProfiles[language][key];
+}
+
+function getSeasonMoodLocalized(season, language = currentLanguage) {
+  if (language === "ko") {
+    return seasonMood[season];
+  }
+
+  return i18n.seasonMood[language][season];
+}
+
+function getArchetypeWordsLocalized(elementName, language = currentLanguage) {
+  if (language === "ko") {
+    return archetypeWords[elementName];
+  }
+
+  return i18n.archetypeWords[language][elementName];
+}
+
+function getZodiacIndex(year) {
+  return ((year - 2020) % 12 + 12) % 12;
+}
+
+function getZodiacLabel(year, language = currentLanguage) {
+  const zodiacIndex = getZodiacIndex(year);
+  if (language === "ko") {
+    return zodiacAnimals[zodiacIndex];
+  }
+
+  return i18n.zodiacAnimals[language][zodiacIndex];
+}
+
+function setLanguage(language, { rerender = true } = {}) {
+  if (!supportedLanguages.includes(language)) {
+    return;
+  }
+
+  currentLanguage = language;
+  try {
+    window.localStorage.setItem("dangnyang-language", language);
+  } catch (error) {
+    // Ignore storage access issues.
+  }
+
+  applyStaticTranslations();
+  updateMetaTags();
+  updateLanguageButtons();
+  updateKeywordButtonLabels();
+  updateKeywordCount();
+  updateBreedOptions(petTypeInput.value, breedSelect.value);
+  updateFormState();
+
+  if (rerender && petNameInput.value.trim() && birthDateInput.value) {
+    const values = Object.fromEntries(new FormData(form).entries());
+    renderReading(buildReading(values, language), values, { scroll: false });
+  } else if (currentState) {
+    currentState.language = currentLanguage;
+    syncShareUrl(currentState);
+  }
+}
+
 function xmur3(text) {
   let h = 1779033703 ^ text.length;
   for (let i = 0; i < text.length; i += 1) {
@@ -695,8 +939,7 @@ function formatMonthSeason(month) {
 }
 
 function getZodiac(year) {
-  const index = ((year - 2020) % 12 + 12) % 12;
-  return zodiacAnimals[index];
+  return getZodiacLabel(year, currentLanguage);
 }
 
 function pick(array, random) {
@@ -708,9 +951,9 @@ function getBreedProfile(type, value) {
 }
 
 function renderBreedPreview(type, value) {
-  const breed = getBreedProfile(type, value);
+  const breed = getBreedProfileLocalized(type, value, currentLanguage);
   breedNamePreview.textContent = breed.label;
-  breedCopy.textContent = `${breed.personality} ${breed.routine}`;
+  breedCopy.textContent = breed.preview;
 }
 
 function updateBreedOptions(type, preferredValue) {
@@ -718,10 +961,11 @@ function updateBreedOptions(type, preferredValue) {
   const groupedBreeds = new Map();
 
   breedCatalog[type].forEach((breed) => {
-    if (!groupedBreeds.has(breed.group)) {
-      groupedBreeds.set(breed.group, []);
+    const localizedBreed = getBreedProfileLocalized(type, breed.value, currentLanguage);
+    if (!groupedBreeds.has(localizedBreed.group)) {
+      groupedBreeds.set(localizedBreed.group, []);
     }
-    groupedBreeds.get(breed.group).push(breed);
+    groupedBreeds.get(localizedBreed.group).push(localizedBreed);
   });
 
   groupedBreeds.forEach((breeds, groupName) => {
@@ -746,15 +990,19 @@ function updateBreedOptions(type, preferredValue) {
     ? preferredValue
     : breedCatalog[type][0].value;
   breedSelect.value = nextValue;
-  breedHint.textContent = type === "dog"
-    ? "소형견, 중형견, 대형견으로 나눠두었어요. 믹스견이라면 가장 가까운 느낌을 골라도 괜찮아요."
-    : "믹스묘나 코숏 느낌이라면 가장 가까운 계열로 골라보세요.";
+  breedHint.textContent = getCopy().form.breedHint;
   renderBreedPreview(type, nextValue);
 }
 
 function updateKeywordCount() {
-  keywordCount.textContent = `${selectedKeywords.size} / ${keywordLimit} 선택`;
+  keywordCount.textContent = getCopy().form.keywordCount(selectedKeywords.size, keywordLimit);
   keywordCount.classList.toggle("full", selectedKeywords.size >= keywordLimit);
+}
+
+function updateKeywordButtonLabels() {
+  keywordButtons.forEach((button) => {
+    button.textContent = getKeywordLabel(button.dataset.keyword, currentLanguage);
+  });
 }
 
 function setSelectedKeywords(keywords) {
@@ -801,11 +1049,14 @@ function shortLabel(label) {
 }
 
 function getRhythmTitle(timeLabel) {
-  return timeLabel === "시간 미상" ? "차분한 기본 리듬" : `${timeLabel} 리듬`;
+  return getCopy().result.rhythm === "기분 리듬"
+    ? (timeLabel === "시간 미상" ? "차분한 기본 리듬" : `${timeLabel} 리듬`)
+    : timeLabel;
 }
 
 function collectState(values) {
   return {
+    language: currentLanguage,
     petType: values.petType,
     petName: values.petName.trim(),
     guardianName: values.guardianName.trim(),
@@ -822,6 +1073,7 @@ function buildShareUrl(state) {
   url.hash = "";
 
   const params = new URLSearchParams();
+  params.set("lang", state.language || currentLanguage);
   params.set("type", state.petType);
   params.set("name", state.petName);
   params.set("breed", state.breed);
@@ -871,27 +1123,17 @@ function updateFormState() {
   const hasRequiredFields = petNameInput.value.trim() && birthDateInput.value;
   submitButton.disabled = !hasRequiredFields;
   formStatus.textContent = hasRequiredFields
-    ? "필수 입력이 채워졌어요. 품종과 키워드를 더하면 결과가 더 디테일해져요."
-    : "이름과 생일을 입력하면 버튼이 활성화돼요.";
+    ? getCopy().form.statusReady
+    : getCopy().form.statusIdle;
 }
 
 function getTimeProfile(time) {
-  if (!time) {
-    return timeProfiles.unknown;
-  }
-
-  const [hour] = time.split(":").map(Number);
-  if (hour < 5) return timeProfiles.night;
-  if (hour < 8) return timeProfiles.dawn;
-  if (hour < 12) return timeProfiles.morning;
-  if (hour < 17) return timeProfiles.afternoon;
-  if (hour < 21) return timeProfiles.evening;
-  return timeProfiles.night;
+  return getTimeProfileLocalized(getTimeProfileKey(time), currentLanguage);
 }
 
-function buildArchetypeName(primary, secondary, random) {
-  const prefix = pick(archetypeWords[primary.name].prefix, random);
-  const role = pick(archetypeWords[secondary.name].role, random);
+function buildArchetypeName(primary, secondary, random, language = currentLanguage) {
+  const prefix = pick(getArchetypeWordsLocalized(primary.name, language).prefix, random);
+  const role = pick(getArchetypeWordsLocalized(secondary.name, language).role, random);
   return `${prefix} ${role}`;
 }
 
@@ -943,9 +1185,10 @@ keywordButtons.forEach((button) => {
 });
 
 sampleButton.addEventListener("click", () => {
+  const sample = i18n.samples[currentLanguage] || i18n.samples.ko;
   setPetType("dog", "welsh-corgi");
-  petNameInput.value = "보리";
-  guardianNameInput.value = "서윤";
+  petNameInput.value = sample.petName;
+  guardianNameInput.value = sample.guardianName;
   birthDateInput.value = "2021-04-18";
   birthTimeInput.value = "08:10";
   setSelectedKeywords(["장난꾸러기", "먹보", "의젓함"]);
@@ -971,21 +1214,22 @@ async function copyTextToClipboard(text) {
 }
 
 function buildSummaryText(reading) {
+  const copy = getCopy(reading.language);
   return [
-    `${reading.petName}의 댕냥 사주`,
+    reading.shareTitleText,
     `${reading.archetype}`,
     "",
     reading.summary,
     "",
-    `한눈에 보는 기질: ${reading.snapshotHeadline}`,
+    `${copy.summaryLabels.snapshot}: ${reading.snapshotHeadline}`,
     reading.snapshotBody,
     "",
-    `타고난 성향: ${reading.temperament}`,
-    `집사와의 케미: ${reading.chemistry}`,
-    `하루 루틴 힌트: ${reading.routine}`,
-    `돌봄 포인트: ${reading.care}`,
-    `행운 포인트: ${reading.luck}`,
-    `오늘의 부적: ${reading.charm}`
+    `${copy.summaryLabels.temperament}: ${reading.temperament}`,
+    `${copy.summaryLabels.chemistry}: ${reading.chemistry}`,
+    `${copy.summaryLabels.routine}: ${reading.routine}`,
+    `${copy.summaryLabels.care}: ${reading.care}`,
+    `${copy.summaryLabels.luck}: ${reading.luck}`,
+    `${copy.summaryLabels.charm}: ${reading.charm}`
   ].join("\n");
 }
 
@@ -1023,24 +1267,31 @@ function strokeRoundedRect(ctx, x, y, width, height, radius, strokeStyle, lineWi
 }
 
 function getWrappedLines(ctx, text, maxWidth, maxLines) {
-  const words = text.split(" ");
   const lines = [];
-  let currentLine = "";
+  const paragraphs = String(text).split("\n");
 
-  words.forEach((word) => {
-    const candidate = currentLine ? `${currentLine} ${word}` : word;
-    if (ctx.measureText(candidate).width <= maxWidth || !currentLine) {
-      currentLine = candidate;
+  paragraphs.forEach((paragraph) => {
+    if (!paragraph) {
+      lines.push("");
       return;
     }
 
-    lines.push(currentLine);
-    currentLine = word;
-  });
+    let currentLine = "";
+    for (const char of Array.from(paragraph)) {
+      const candidate = `${currentLine}${char}`;
+      if (ctx.measureText(candidate).width <= maxWidth || !currentLine) {
+        currentLine = candidate;
+        continue;
+      }
 
-  if (currentLine) {
-    lines.push(currentLine);
-  }
+      lines.push(currentLine.trimEnd());
+      currentLine = char.trimStart();
+    }
+
+    if (currentLine) {
+      lines.push(currentLine.trimEnd());
+    }
+  });
 
   const visibleLines = typeof maxLines === "number" ? lines.slice(0, maxLines) : [...lines];
 
@@ -1127,17 +1378,17 @@ function measureInfoCardHeight(ctx, width, card) {
   const innerWidth = width - 68;
   let height = 36;
 
-  ctx.font = '28px "Jua", sans-serif';
+  ctx.font = '28px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
   height += 30;
 
   if (card.title) {
     height += 14;
-    ctx.font = '44px "Jua", sans-serif';
+    ctx.font = '44px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
     height += getWrappedLines(ctx, card.title, innerWidth, 2).length * 52;
   }
 
   height += 18;
-  ctx.font = '27px "Gowun Dodum", sans-serif';
+  ctx.font = '27px "Gowun Dodum", "Noto Sans JP", sans-serif';
   height += getWrappedLines(ctx, card.body, innerWidth).length * 40;
   height += 34;
 
@@ -1149,24 +1400,29 @@ function drawInfoCard(ctx, x, y, width, height, card) {
   strokeRoundedRect(ctx, x, y, width, height, 28, "rgba(47, 38, 31, 0.08)");
 
   ctx.fillStyle = "#ff6b45";
-  ctx.font = '28px "Jua", sans-serif';
+  ctx.font = '28px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
   ctx.fillText(card.label, x + 34, y + 48);
 
   let cursorY = y + 82;
 
   if (card.title) {
     ctx.fillStyle = "#2f261f";
-    ctx.font = '44px "Jua", sans-serif';
+    ctx.font = '44px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
     cursorY = drawWrappedText(ctx, card.title, x + 34, cursorY, width - 68, 52, 2);
     cursorY += 12;
   }
 
   ctx.fillStyle = "#4f4338";
-  ctx.font = '27px "Gowun Dodum", sans-serif';
+  ctx.font = '27px "Gowun Dodum", "Noto Sans JP", sans-serif';
   drawWrappedText(ctx, card.body, x + 34, cursorY, width - 68, 40);
 }
 
 async function buildExportCanvas(reading) {
+  if (document.fonts?.ready) {
+    await document.fonts.ready;
+  }
+
+  const copy = getCopy(reading.language);
   const canvas = document.createElement("canvas");
   canvas.width = 1200;
   canvas.height = 1600;
@@ -1178,15 +1434,15 @@ async function buildExportCanvas(reading) {
   const cardRows = [
     [
       {
-        label: "사주 타입",
+        label: copy.result.type,
         title: reading.archetype,
         body: reading.typeSummary,
         fill: "rgba(255, 244, 214, 0.9)",
         minHeight: 220
       },
       {
-        label: "기분 리듬",
-        title: getRhythmTitle(reading.timeLabel),
+        label: copy.result.rhythm,
+        title: reading.rhythmTitleText,
         body: reading.rhythm,
         fill: "rgba(240, 251, 248, 0.92)",
         minHeight: 220
@@ -1194,13 +1450,13 @@ async function buildExportCanvas(reading) {
     ],
     [
       {
-        label: "타고난 성향",
+        label: copy.result.temperament,
         body: reading.temperament,
         fill: "rgba(255, 255, 255, 0.92)",
         minHeight: 228
       },
       {
-        label: "집사와의 케미",
+        label: copy.result.chemistry,
         body: reading.chemistry,
         fill: "rgba(255, 255, 255, 0.92)",
         minHeight: 228
@@ -1208,13 +1464,13 @@ async function buildExportCanvas(reading) {
     ],
     [
       {
-        label: "하루 루틴 힌트",
+        label: copy.result.routine,
         body: reading.routine,
         fill: "rgba(255, 248, 238, 0.94)",
         minHeight: 228
       },
       {
-        label: "돌봄 포인트",
+        label: copy.result.care,
         body: reading.care,
         fill: "rgba(245, 250, 255, 0.94)",
         minHeight: 228
@@ -1222,22 +1478,22 @@ async function buildExportCanvas(reading) {
     ]
   ];
   const snapshotCard = {
-    label: "한눈에 보는 기질",
+    label: copy.result.snapshot,
     title: reading.snapshotHeadline,
-    body: `${reading.snapshotBody} 태그: ${reading.snapshotTags.join(" · ")}.`,
+    body: `${reading.snapshotBody} ${reading.snapshotTags.join(" · ")}`,
     fill: "rgba(255, 249, 228, 0.94)",
     minHeight: 210
   };
   const luckCard = {
-    label: "행운 포인트",
+    label: copy.result.luck,
     body: reading.luck,
     fill: "rgba(255, 244, 236, 0.92)",
     minHeight: 206
   };
 
-  ctx.font = '30px "Gowun Dodum", sans-serif';
+  ctx.font = '30px "Gowun Dodum", "Noto Sans JP", sans-serif';
   const summaryBottom = 426 + getWrappedLines(ctx, reading.summary, 940, 4).length * 46;
-  ctx.font = '24px "Gowun Dodum", sans-serif';
+  ctx.font = '24px "Gowun Dodum", "Noto Sans JP", sans-serif';
   const pillsBottom = summaryBottom + 28 + measurePillsHeight(ctx, pillItems, 940);
   const contentStartY = pillsBottom + 34;
 
@@ -1249,7 +1505,7 @@ async function buildExportCanvas(reading) {
     )
   );
   const luckHeight = measureInfoCardHeight(ctx, wideCardWidth, luckCard);
-  ctx.font = '31px "Gowun Dodum", sans-serif';
+  ctx.font = '31px "Gowun Dodum", "Noto Sans JP", sans-serif';
   const charmHeight = 48 + 24 + getWrappedLines(ctx, reading.charm, 908).length * 42 + 36;
 
   const footerY =
@@ -1303,35 +1559,35 @@ async function buildExportCanvas(reading) {
     fillRoundedRect(ctx, qrImageX, qrImageY, qrImageSize, qrImageSize, 20, "rgba(255, 247, 236, 0.95)");
     strokeRoundedRect(ctx, qrImageX, qrImageY, qrImageSize, qrImageSize, 20, "rgba(47, 38, 31, 0.08)");
     ctx.fillStyle = "#716453";
-    ctx.font = '24px "Jua", sans-serif';
-    ctx.fillText("QR 준비 중", qrBoxX + 56, qrBoxY + 116);
+    ctx.font = '24px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
+    ctx.fillText("QR", qrBoxX + 88, qrBoxY + 116);
   }
 
   ctx.fillStyle = "#ff6b45";
-  ctx.font = '24px "Jua", sans-serif';
-  ctx.fillText("QR로 바로 보기", qrBoxX + 36, qrBoxY + 224);
+  ctx.font = '24px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
+  ctx.fillText(copy.result.qr, qrBoxX + 36, qrBoxY + 224);
 
   ctx.fillStyle = "#ff6b45";
-  ctx.font = '28px "Jua", sans-serif';
+  ctx.font = '28px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
   ctx.fillText("DANGNYANG SAJU", 112, 138);
 
   ctx.fillStyle = "#2f261f";
-  ctx.font = '54px "Jua", sans-serif';
-  ctx.fillText(`${reading.petName}의 사주 카드`, 112, 210, headerTextWidth);
+  ctx.font = '54px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
+  ctx.fillText(reading.exportTitleText, 112, 210, headerTextWidth);
 
   ctx.fillStyle = "#716453";
-  ctx.font = '26px "Gowun Dodum", sans-serif';
-  ctx.fillText(`${petLabels[reading.petType]} · ${reading.breed.label} · ${reading.zodiac}띠`, 112, 256, headerTextWidth);
+  ctx.font = '26px "Gowun Dodum", "Noto Sans JP", sans-serif';
+  ctx.fillText(reading.exportMetaText, 112, 256, headerTextWidth);
 
   ctx.fillStyle = "#2f261f";
-  ctx.font = '78px "Jua", sans-serif';
+  ctx.font = '78px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
   ctx.fillText(reading.archetype, 112, 360, headerTextWidth);
 
   ctx.fillStyle = "#716453";
-  ctx.font = '30px "Gowun Dodum", sans-serif';
+  ctx.font = '30px "Gowun Dodum", "Noto Sans JP", sans-serif';
   let cursorY = drawWrappedText(ctx, reading.summary, 112, 426, 940, 46, 4);
 
-  ctx.font = '24px "Gowun Dodum", sans-serif';
+  ctx.font = '24px "Gowun Dodum", "Noto Sans JP", sans-serif';
   cursorY = drawPills(ctx, pillItems, 112, cursorY + 28, 940);
 
   cursorY += 34;
@@ -1351,11 +1607,11 @@ async function buildExportCanvas(reading) {
   fillRoundedRect(ctx, 112, footerY, 976, charmHeight, 32, "rgba(47, 38, 31, 0.92)");
 
   ctx.fillStyle = "#ffd980";
-  ctx.font = '24px "Jua", sans-serif';
-  ctx.fillText("오늘의 부적", 146, footerY + 48);
+  ctx.font = '24px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
+  ctx.fillText(copy.result.exportCharm, 146, footerY + 48);
 
   ctx.fillStyle = "#fff8ef";
-  ctx.font = '31px "Gowun Dodum", sans-serif';
+  ctx.font = '31px "Gowun Dodum", "Noto Sans JP", sans-serif';
   drawWrappedText(ctx, reading.charm, 146, footerY + 92, 908, 42);
 
   return canvas;
@@ -1391,9 +1647,9 @@ copyButton.addEventListener("click", async () => {
 
   try {
     await copyTextToClipboard(buildSummaryText(currentReading));
-    flashButtonLabel(copyButton, "복사 완료");
+    flashButtonLabel(copyButton, getCopy(currentReading.language).actions.copySuccess);
   } catch (error) {
-    flashButtonLabel(copyButton, "복사 실패");
+    flashButtonLabel(copyButton, getCopy(currentReading.language).actions.copyFail);
   }
 });
 
@@ -1404,7 +1660,7 @@ shareButton.addEventListener("click", async () => {
 
   const shareUrl = syncShareUrl(currentState);
   const shareData = {
-    title: `${currentReading.petName}의 댕냥 사주`,
+    title: currentReading.shareTitleText,
     text: `${currentReading.archetype} · ${currentReading.summary}`,
     url: shareUrl
   };
@@ -1412,7 +1668,7 @@ shareButton.addEventListener("click", async () => {
   if (navigator.share) {
     try {
       await navigator.share(shareData);
-      flashButtonLabel(shareButton, "공유 완료");
+      flashButtonLabel(shareButton, getCopy(currentReading.language).actions.shareSuccess);
       return;
     } catch (error) {
       if (error?.name === "AbortError") {
@@ -1423,9 +1679,9 @@ shareButton.addEventListener("click", async () => {
 
   try {
     await copyTextToClipboard(shareUrl);
-    flashButtonLabel(shareButton, "링크 복사됨");
+    flashButtonLabel(shareButton, getCopy(currentReading.language).actions.shareCopied);
   } catch (error) {
-    flashButtonLabel(shareButton, "복사 실패");
+    flashButtonLabel(shareButton, getCopy(currentReading.language).actions.copyFail);
   }
 });
 
@@ -1435,15 +1691,15 @@ exportButton.addEventListener("click", async () => {
   }
 
   exportButton.disabled = true;
-  exportButton.textContent = "이미지 준비 중";
+  exportButton.textContent = getCopy(currentReading.language).actions.exportPreparing;
 
   try {
     const canvas = await buildExportCanvas(currentReading);
-    downloadCanvas(canvas, `댕냥사주-${currentReading.petName}.png`);
-    flashButtonLabel(exportButton, "이미지 저장됨");
+    downloadCanvas(canvas, `dangnyang-saju-${currentReading.petName}.png`);
+    flashButtonLabel(exportButton, getCopy(currentReading.language).actions.exportSuccess);
   } catch (error) {
     exportButton.textContent = buttonDefaultLabels.get(exportButton);
-    flashButtonLabel(exportButton, "저장 실패");
+    flashButtonLabel(exportButton, getCopy(currentReading.language).actions.exportFail);
   } finally {
     exportButton.disabled = false;
   }
@@ -1476,96 +1732,158 @@ function renderBadges(items) {
   });
 }
 
-function buildReading(values) {
+function buildReading(values, language = currentLanguage) {
   const petType = values.petType;
   const petName = values.petName.trim();
-  const guardianName = values.guardianName.trim() || "집사";
+  const copy = getCopy(language);
+  const guardianName = values.guardianName.trim() || copy.fallbackGuardian;
   const birthDate = values.birthDate;
   const birthTime = values.birthTime || "";
   const keywords = [...selectedKeywords];
-  const breed = getBreedProfile(petType, values.breed);
-  const seedText = [petType, breed.value, petName, guardianName, birthDate, birthTime, keywords.sort().join("|")].join("|");
+  const baseBreed = getBreedProfile(petType, values.breed);
+  const breed = getBreedProfileLocalized(petType, values.breed, language);
+  const seedText = [petType, baseBreed.value, petName, guardianName, birthDate, birthTime, keywords.sort().join("|")].join("|");
   const random = mulberry32(xmur3(seedText)());
   const scores = buildElementScores(seedText, birthDate, birthTime || "00:00").sort((a, b) => b.score - a.score);
   const primary = scores[0];
   const secondary = scores[1];
   const birth = new Date(`${birthDate}T${birthTime || "12:00"}`);
   const season = formatMonthSeason(birth.getMonth() + 1);
-  const zodiac = getZodiac(birth.getFullYear());
-  const timeProfile = getTimeProfile(birthTime);
-  const primaryProfile = elementMeaning[primary.name];
-  const secondaryProfile = elementMeaning[secondary.name];
-  const archetype = buildArchetypeName(primary, secondary, random);
+  const zodiac = getZodiacLabel(birth.getFullYear(), language);
+  const zodiacBadge = language === "ko" ? `${zodiac}띠` : language === "ja" ? `${zodiac}年` : `Year of the ${zodiac}`;
+  const timeKey = getTimeProfileKey(birthTime);
+  const timeProfile = getTimeProfileLocalized(timeKey, language);
+  const primaryProfile = getElementProfileLocalized(primary.name, language);
+  const secondaryProfile = getElementProfileLocalized(secondary.name, language);
+  const archetype = buildArchetypeName(primary, secondary, random, language);
   const keywordTraitLine = keywords.length
-    ? keywords.map((keyword) => pick(keywordProfiles[keyword].trait, random)).join(" ")
-    : "성격 키워드를 더 고르면 아이다운 결이 더 또렷하게 드러나요.";
+    ? keywords.map((keyword) => pick(getKeywordProfile(keyword, language).trait, random)).join(" ")
+    : language === "ko"
+      ? "성격 키워드를 더 고르면 아이다운 결이 더 또렷하게 드러나요."
+      : language === "ja"
+        ? "性格キーワードを足すと、その子らしさがもっとくっきり見えてきます。"
+        : "Add a few temperament keywords to make the reading feel even more like your pet.";
   const keywordCareLine = keywords.length
-    ? keywords.map((keyword) => pick(keywordProfiles[keyword].care, random)).join(" ")
-    : "좋아하는 자극과 싫어하는 자극을 천천히 기록해두면 해석이 더 맞아떨어져요.";
-  const balanceLine = primary.score - secondary.score >= 9
-    ? `${primaryProfile.label}이 조금 더 선명해서 평소 기질의 중심이 비교적 또렷한 편이에요.`
-    : `${primaryProfile.label}과 ${secondaryProfile.label}이 고르게 섞여 여러 매력이 함께 보이는 균형형이에요.`;
+    ? keywords.map((keyword) => pick(getKeywordProfile(keyword, language).care, random)).join(" ")
+    : language === "ko"
+      ? "좋아하는 자극과 싫어하는 자극을 천천히 기록해두면 해석이 더 맞아떨어져요."
+      : language === "ja"
+        ? "好きな刺激と苦手な刺激をゆっくり記録していくと、読み取りがよりしっくりしやすくなります。"
+        : "Keeping gentle notes on what they love and dislike makes the reading feel more spot on.";
+  const primaryShort = primaryProfile.short || shortLabel(primaryProfile.label);
+  const secondaryShort = secondaryProfile.short || shortLabel(secondaryProfile.label);
+  const badgePetLabel = getPetLabel(petType, language);
 
-  const summary = `${petName}는 ${breed.label} 특유의 ${breed.vibe} 결 위에 ${primaryProfile.label}이 중심을 잡고 ${
-    secondaryProfile.label
-  }이 옆에서 윤기를 더하는 타입이에요. ${seasonMood[season]} ${timeProfile.summary}`;
+  let balanceLine = "";
+  let summary = "";
+  let typeSummary = "";
+  let rhythm = "";
+  let temperament = "";
+  let chemistry = "";
+  let routine = "";
+  let care = "";
+  let luck = "";
+  let charm = "";
+  let snapshotHeadline = "";
+  let snapshotBody = "";
+  let resultTitleText = "";
+  let stampText = "";
+  let rhythmTitleText = "";
+  let shareTitleText = "";
+  let exportTitleText = "";
+  let exportMetaText = "";
 
-  const typeSummary = `${breed.label}다운 ${breed.vibe} 분위기에 ${primaryProfile.tags.join(" · ")} 흐름이 강하게 얹힌 아이예요. ${
-    balanceLine
-  }`;
+  if (language === "ko") {
+    balanceLine = primary.score - secondary.score >= 9
+      ? `${primaryProfile.label}이 조금 더 선명해서 평소 기질의 중심이 비교적 또렷한 편이에요.`
+      : `${primaryProfile.label}과 ${secondaryProfile.label}이 고르게 섞여 여러 매력이 함께 보이는 균형형이에요.`;
+    summary = `${petName}는 ${baseBreed.label} 특유의 ${baseBreed.vibe} 결 위에 ${primaryProfile.label}이 중심을 잡고 ${secondaryProfile.label}이 옆에서 윤기를 더하는 타입이에요. ${seasonMood[season]} ${timeProfile.summary}`;
+    typeSummary = `${baseBreed.label}다운 ${baseBreed.vibe} 분위기에 ${primaryProfile.tags.join(" · ")} 흐름이 강하게 얹힌 아이예요. ${balanceLine}`;
+    rhythm = `${timeProfile.label}의 결이 들어 있어 ${timeProfile.rhythm} ${pick(primaryProfile.rhythm, random)}`;
+    temperament = `${pick(primaryProfile[petType], random)} ${pick(secondaryProfile[petType], random)} ${baseBreed.personality} ${keywordTraitLine}`;
+    chemistry = `${guardianName} 님과의 케미는 ${pick(secondaryProfile.chemistry, random)} ${baseBreed.social} 특히 ${primaryProfile.label}이 또렷하게 느껴지는 날에는 칭찬, 간식, 눈맞춤처럼 즉각적인 반응이 관계를 더 깊게 만들어요.`;
+    routine = `${baseBreed.routine} ${pick(primaryProfile.rhythm, random)} ${pick([timeProfile.rhythm, pick(secondaryProfile.rhythm, random)], random)}`;
+    care = `${pick(primaryProfile.care, random)} ${keywordCareLine} ${baseBreed.care}`;
+    luck = `행운 컬러는 ${pick(primaryProfile.luck.colors, random)}, 행운 아이템은 ${pick(secondaryProfile.luck.items, random)}이에요. 오늘은 ${pick(primaryProfile.luck.spots, random)}에서 쉬거나 놀면 컨디션이 안정되고, ${pick(secondaryProfile.luck.snacks, random)} 같은 작은 보상이 기분 전환에 도움을 줘요.`;
+    charm = `${petName}의 부적 문장: ${pick([...primaryProfile.charms, ...secondaryProfile.charms, "좋아하는 존재를 믿는 마음이 오늘의 가장 큰 힘이 됩니다."], random)}`;
+    snapshotHeadline = `${primaryShort} 중심 · ${secondaryShort} 보조`;
+    snapshotBody = `${petName}는 ${primaryProfile.tags.join(" · ")} 흐름이 먼저 보이고, ${secondaryProfile.tags.join(" · ")} 결이 옆에서 매력을 더해줘요. ${balanceLine}`;
+    resultTitleText = `${petName}의 타고난 기질은 ${primaryProfile.label}과 ${secondaryProfile.label}`;
+    stampText = `${primaryShort}\n${badgePetLabel}`;
+    rhythmTitleText = timeKey === "unknown" ? "차분한 기본 리듬" : `${timeProfile.label} 리듬`;
+    shareTitleText = `${petName}의 댕냥 사주`;
+    exportTitleText = `${petName}의 사주 카드`;
+    exportMetaText = `${badgePetLabel} · ${baseBreed.label} · ${zodiacBadge}`;
+  } else {
+    const groupCopy = i18n.groupReadingCopy[language][breed.groupKey];
+    const seasonLine = getSeasonMoodLocalized(season, language);
 
-  const rhythm = `${timeProfile.label}의 결이 들어 있어 ${timeProfile.rhythm} ${pick(
-    primaryProfile.rhythm,
-    random
-  )}`;
+    if (language === "en") {
+      balanceLine = primary.score - secondary.score >= 9
+        ? `${primaryProfile.label} shows up a little more strongly, so the center of this pet's temperament feels fairly clear.`
+        : `${primaryProfile.label} and ${secondaryProfile.label} blend together nicely, so several charms tend to show up at once.`;
+      summary = `${petName} carries the ${breed.vibe} tone often felt in ${breed.label}, with ${primaryProfile.label} leading and ${secondaryProfile.label} softly backing it up. ${seasonLine} ${timeProfile.summary}`;
+      typeSummary = `${breed.label} often reads as ${breed.vibe}, and ${primaryProfile.tags.join(" · ")} shows up especially clearly here. ${balanceLine}`;
+      rhythm = `There is a ${timeProfile.label.toLowerCase()} note in the chart, so ${timeProfile.rhythm} ${pick(primaryProfile.rhythm, random)}`;
+      temperament = `${pick(primaryProfile[petType], random)} ${pick(secondaryProfile[petType], random)} ${breed.preview} ${keywordTraitLine}`;
+      chemistry = `With ${guardianName}, the chemistry feels like this: ${pick(secondaryProfile.chemistry, random)} ${groupCopy.social} On days when ${primaryProfile.label} shows up more clearly, quick praise, treats, or warm eye contact deepen the bond fast.`;
+      routine = `${groupCopy.routine} ${pick(primaryProfile.rhythm, random)} ${pick([timeProfile.rhythm, pick(secondaryProfile.rhythm, random)], random)}`;
+      care = `${pick(primaryProfile.care, random)} ${keywordCareLine} ${groupCopy.care}`;
+      luck = `Lucky color: ${pick(primaryProfile.luck.colors, random)}. Lucky item: ${pick(secondaryProfile.luck.items, random)}. Resting or playing near ${pick(primaryProfile.luck.spots, random)} helps the mood settle today, and a tiny reward like ${pick(secondaryProfile.luck.snacks, random)} can brighten the whole flow.`;
+      charm = `${petName}'s charm line: ${pick([...primaryProfile.charms, ...secondaryProfile.charms, "Trusting the ones you love becomes today's strongest lucky charm."], random)}`;
+      snapshotHeadline = `${primaryShort} leads · ${secondaryShort} supports`;
+      snapshotBody = `${petName} first reads as ${primaryProfile.tags.join(" · ")}, then ${secondaryProfile.tags.join(" · ")} comes in to soften and deepen the charm. ${balanceLine}`;
+      resultTitleText = `${petName}'s energy leans toward ${primaryProfile.label} + ${secondaryProfile.label}`;
+      stampText = `${primaryShort}\n${badgePetLabel}`;
+      rhythmTitleText = timeKey === "unknown" ? "Default calm rhythm" : `${timeProfile.label} rhythm`;
+      shareTitleText = `${petName}'s Dangnyang reading`;
+      exportTitleText = `${petName}'s vibe card`;
+      exportMetaText = `${badgePetLabel} · ${breed.label} · ${zodiacBadge}`;
+    } else {
+      balanceLine = primary.score - secondary.score >= 9
+        ? `${primaryProfile.label} がやや強く出ていて、ふだんの気質の軸が比較的はっきりしています。`
+        : `${primaryProfile.label} と ${secondaryProfile.label} がきれいに混ざり合い、いくつもの魅力が一緒に見えやすいバランスタイプです。`;
+      summary = `${petName} には ${breed.label} らしい ${breed.vibe} があり、その上に ${primaryProfile.label} が軸として立ち、${secondaryProfile.label} がやわらかく艶を足しています。${seasonLine} ${timeProfile.summary}`;
+      typeSummary = `${breed.label} らしい ${breed.vibe} に、${primaryProfile.tags.join(" · ")} の流れが特にはっきり重なっています。${balanceLine}`;
+      rhythm = `${timeProfile.label} の気配が入っているので、${timeProfile.rhythm} ${pick(primaryProfile.rhythm, random)}`;
+      temperament = `${pick(primaryProfile[petType], random)} ${pick(secondaryProfile[petType], random)} ${breed.preview} ${keywordTraitLine}`;
+      chemistry = `${guardianName} さんとの相性はこんな感じです。${pick(secondaryProfile.chemistry, random)} ${groupCopy.social} とくに ${primaryProfile.label} がくっきり出る日は、ほめ言葉やおやつ、目を合わせるような反応が距離をぐっと縮めます。`;
+      routine = `${groupCopy.routine} ${pick(primaryProfile.rhythm, random)} ${pick([timeProfile.rhythm, pick(secondaryProfile.rhythm, random)], random)}`;
+      care = `${pick(primaryProfile.care, random)} ${keywordCareLine} ${groupCopy.care}`;
+      luck = `ラッキーカラーは ${pick(primaryProfile.luck.colors, random)}、ラッキーアイテムは ${pick(secondaryProfile.luck.items, random)} です。今日は ${pick(primaryProfile.luck.spots, random)} で休んだり遊んだりすると流れが整いやすく、${pick(secondaryProfile.luck.snacks, random)} のような小さなごほうびが気分転換を助けてくれます。`;
+      charm = `${petName} のおまもりフレーズ: ${pick([...primaryProfile.charms, ...secondaryProfile.charms, "大好きな存在を信じる気持ちが、今日いちばんの力になりやすいです。"], random)}`;
+      snapshotHeadline = `${primaryShort} が主役 · ${secondaryShort} が補助`;
+      snapshotBody = `${petName} はまず ${primaryProfile.tags.join(" · ")} の流れが見え、その横で ${secondaryProfile.tags.join(" · ")} の気配が魅力を深めます。${balanceLine}`;
+      resultTitleText = `${petName} の気質は ${primaryProfile.label} と ${secondaryProfile.label} が中心`;
+      stampText = `${primaryShort}\n${badgePetLabel}`;
+      rhythmTitleText = timeKey === "unknown" ? "落ち着いた基本リズム" : `${timeProfile.label} リズム`;
+      shareTitleText = `${petName} の댕냥サジュ`;
+      exportTitleText = `${petName} の気質カード`;
+      exportMetaText = `${badgePetLabel} · ${breed.label} · ${zodiacBadge}`;
+    }
+  }
 
-  const temperament = `${pick(primaryProfile[petType], random)} ${pick(
-    secondaryProfile[petType],
-    random
-  )} ${breed.personality} ${keywordTraitLine}`;
-
-  const chemistry = `${guardianName} 님과의 케미는 ${pick(secondaryProfile.chemistry, random)} ${
-    breed.social
-  } 특히 ${primaryProfile.label}이 또렷하게 느껴지는 날에는 칭찬, 간식, 눈맞춤처럼 즉각적인 반응이 관계를 더 깊게 만들어요.`;
-
-  const routine = `${breed.routine} ${pick(primaryProfile.rhythm, random)} ${pick(
-    [timeProfile.rhythm, pick(secondaryProfile.rhythm, random)],
-    random
-  )}`;
-
-  const care = `${pick(primaryProfile.care, random)} ${keywordCareLine} ${breed.care}`;
-
-  const luck = `행운 컬러는 ${pick(primaryProfile.luck.colors, random)}, 행운 아이템은 ${pick(
-    secondaryProfile.luck.items,
-    random
-  )}이에요. 오늘은 ${pick(primaryProfile.luck.spots, random)}에서 쉬거나 놀면 컨디션이 안정되고, ${
-    pick(secondaryProfile.luck.snacks, random)
-  } 같은 작은 보상이 기분 전환에 도움을 줘요.`;
-
-  const charm = `${petName}의 부적 문장: ${pick(
-    [...primaryProfile.charms, ...secondaryProfile.charms, "좋아하는 존재를 믿는 마음이 오늘의 가장 큰 힘이 됩니다."],
-    random
-  )}`;
-
-  const snapshotHeadline = `${shortLabel(primaryProfile.label)} 중심 · ${shortLabel(secondaryProfile.label)} 보조`;
-  const snapshotBody = `${petName}는 ${primaryProfile.tags.join(" · ")} 흐름이 먼저 보이고, ${
-    secondaryProfile.tags.join(" · ")
-  } 결이 옆에서 매력을 더해줘요. ${balanceLine}`;
-  const snapshotTags = [...primaryProfile.tags, ...secondaryProfile.tags, ...keywords].filter(
+  const snapshotTags = [...primaryProfile.tags, ...secondaryProfile.tags, ...keywords.map((keyword) => getKeywordLabel(keyword, language))].filter(
     (item, index, array) => array.indexOf(item) === index
   );
 
   return {
+    language,
     petType,
     petName,
     guardianName,
     breed,
     zodiac,
+    zodiacBadge,
+    badgePetLabel,
     timeLabel: timeProfile.label,
+    timeKey,
     primary,
     secondary,
     primaryLabel: primaryProfile.label,
     secondaryLabel: secondaryProfile.label,
+    primaryShort,
+    secondaryShort,
     primaryProfile,
     secondaryProfile,
     archetype,
@@ -1575,12 +1893,18 @@ function buildReading(values) {
     snapshotTags,
     typeSummary,
     rhythm,
+    rhythmTitleText,
     temperament,
     chemistry,
     routine,
     care,
     luck,
     charm,
+    resultTitleText,
+    stampText,
+    shareTitleText,
+    exportTitleText,
+    exportMetaText,
     scores
   };
 }
@@ -1588,24 +1912,25 @@ function buildReading(values) {
 function renderReading(reading, values, options = {}) {
   currentReading = reading;
   currentState = collectState(values);
+  currentState.language = reading.language;
   syncShareUrl(currentState);
 
   renderBadges([
-    petLabels[reading.petType],
+    reading.badgePetLabel,
     reading.breed.label,
-    `${reading.zodiac}띠`,
+    reading.zodiacBadge,
     reading.primaryLabel,
     reading.secondaryLabel
   ]);
-  resultTitle.textContent = `${reading.petName}의 타고난 기질은 ${reading.primaryLabel}과 ${reading.secondaryLabel}`;
+  resultTitle.textContent = reading.resultTitleText;
   resultSummary.textContent = reading.summary;
-  resultStamp.textContent = `${shortLabel(reading.primaryLabel)}\n${petLabels[reading.petType]}`;
+  resultStamp.textContent = reading.stampText;
   snapshotHeadline.textContent = reading.snapshotHeadline;
   snapshotBody.textContent = reading.snapshotBody;
   renderSnapshotTags(reading.snapshotTags);
   typeName.textContent = reading.archetype;
   typeCaption.textContent = reading.typeSummary;
-  rhythmTitle.textContent = reading.timeLabel === "시간 미상" ? "차분한 기본 리듬" : `${reading.timeLabel} 리듬`;
+  rhythmTitle.textContent = reading.rhythmTitleText;
   rhythmBody.textContent = reading.rhythm;
   temperamentBody.textContent = reading.temperament;
   chemistryBody.textContent = reading.chemistry;
@@ -1626,7 +1951,12 @@ function renderReading(reading, values, options = {}) {
 function restoreStateFromUrl() {
   const params = new URLSearchParams(window.location.search);
 
-  if (!params.size) {
+  const language = params.get("lang");
+  if (supportedLanguages.includes(language)) {
+    currentLanguage = language;
+  }
+
+  if (!params.size || (params.size === 1 && params.has("lang"))) {
     return;
   }
 
@@ -1646,7 +1976,7 @@ function restoreStateFromUrl() {
     return;
   }
 
-  renderReading(buildReading(values), values, { scroll: false });
+  renderReading(buildReading(values, currentLanguage), values, { scroll: false });
 }
 
 form.addEventListener("submit", (event) => {
@@ -1657,9 +1987,20 @@ form.addEventListener("submit", (event) => {
     return;
   }
 
-  renderReading(buildReading(values), values);
+  renderReading(buildReading(values, currentLanguage), values);
 });
 
+languageButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setLanguage(button.dataset.lang);
+  });
+});
+
+currentLanguage = determineInitialLanguage();
+applyStaticTranslations();
+updateMetaTags();
+updateLanguageButtons();
+updateKeywordButtonLabels();
 setPetType("dog", "maltese");
 updateKeywordCount();
 updateFormState();

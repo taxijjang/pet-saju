@@ -26,7 +26,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Gowun Dodum", sans-serif;
+  font-family: "Gowun Dodum", "Noto Sans JP", sans-serif;
   color: var(--ink);
   background:
     radial-gradient(circle at top left, rgba(255, 184, 137, 0.6), transparent 30%),
@@ -119,6 +119,15 @@ button {
   margin-bottom: 18px;
 }
 
+.brand-tools {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .brand-mark {
   width: 74px;
   height: 74px;
@@ -142,14 +151,14 @@ button {
 .brand-kicker {
   margin: 0;
   color: var(--coral-deep);
-  font-family: "Jua", sans-serif;
+  font-family: "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif;
   font-size: 0.78rem;
   letter-spacing: 0.18em;
 }
 
 .brand-name {
   margin: 0;
-  font-family: "Jua", sans-serif;
+  font-family: "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif;
   font-size: clamp(1.8rem, 4vw, 2.25rem);
   line-height: 1;
   letter-spacing: -0.05em;
@@ -162,7 +171,6 @@ button {
 }
 
 .brand-chip {
-  margin-left: auto;
   padding: 10px 14px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.82);
@@ -171,9 +179,43 @@ button {
   font-size: 0.9rem;
 }
 
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(47, 38, 31, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.lang-button {
+  min-width: 46px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.lang-button.active {
+  background: linear-gradient(135deg, rgba(255, 140, 107, 0.94), rgba(255, 217, 128, 0.94));
+  color: #402518;
+  box-shadow: 0 10px 18px rgba(255, 140, 107, 0.18);
+}
+
 .hero-copy h1 {
   margin: 10px 0 18px;
-  font-family: "Jua", sans-serif;
+  font-family: "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif;
   font-size: clamp(2.5rem, 6vw, 4.7rem);
   line-height: 1.02;
   letter-spacing: -0.04em;
@@ -215,7 +257,7 @@ button {
 .eyebrow {
   margin: 0;
   color: var(--coral-deep);
-  font-family: "Jua", sans-serif;
+  font-family: "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.92rem;
@@ -266,7 +308,7 @@ button {
 
 .note-label {
   margin: 0 0 14px;
-  font-family: "Jua", sans-serif;
+  font-family: "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif;
   font-size: 1.2rem;
 }
 
@@ -305,7 +347,7 @@ button {
 
 .section-heading h2 {
   margin: 6px 0 0;
-  font-family: "Jua", sans-serif;
+  font-family: "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif;
   font-size: 2rem;
 }
 
@@ -406,13 +448,13 @@ button {
 .helper-label {
   margin: 0;
   color: var(--coral-deep);
-  font-family: "Jua", sans-serif;
+  font-family: "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif;
   font-size: 0.95rem;
 }
 
 .helper-title {
   margin: 0;
-  font-family: "Jua", sans-serif;
+  font-family: "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif;
   font-size: 1.3rem;
   line-height: 1.1;
 }
@@ -778,6 +820,12 @@ button {
     margin-left: 0;
   }
 
+  .brand-tools {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+
   .hero-copy h1 {
     font-size: clamp(2.1rem, 11vw, 3.2rem);
   }
@@ -824,5 +872,14 @@ button {
 
   .pet-toggle {
     flex-direction: column;
+  }
+
+  .language-switcher {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .lang-button {
+    flex: 1;
   }
 }
