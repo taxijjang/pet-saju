@@ -1015,7 +1015,7 @@ function strokeRoundedRect(ctx, x, y, width, height, radius, strokeStyle, lineWi
   ctx.restore();
 }
 
-function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+function getWrappedLines(ctx, text, maxWidth, maxLines) {
   const words = text.split(" ");
   const lines = [];
   let currentLine = "";
@@ -1035,9 +1035,9 @@ function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
     lines.push(currentLine);
   }
 
-  const visibleLines = typeof maxLines === "number" ? lines.slice(0, maxLines) : lines;
+  const visibleLines = typeof maxLines === "number" ? lines.slice(0, maxLines) : [...lines];
 
-  if (typeof maxLines === "number" && lines.length > maxLines) {
+  if (typeof maxLines === "number" && lines.length > maxLines && visibleLines.length) {
     const lastIndex = visibleLines.length - 1;
     let lastLine = visibleLines[lastIndex];
 
@@ -1047,6 +1047,12 @@ function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
 
     visibleLines[lastIndex] = `${lastLine}...`;
   }
+
+  return visibleLines;
+}
+
+function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+  const visibleLines = getWrappedLines(ctx, text, maxWidth, maxLines);
 
   visibleLines.forEach((line, index) => {
     ctx.fillText(line, x, y + lineHeight * index);
@@ -1079,61 +1085,33 @@ function drawPills(ctx, items, startX, startY, maxWidth) {
   return cursorY + height;
 }
 
+function measurePillsHeight(ctx, items, maxWidth) {
+  let cursorX = 0;
+  let rows = 1;
+  const gap = 12;
+  const horizontalPadding = 16;
+  const height = 42;
+
+  items.forEach((item) => {
+    const width = ctx.measureText(item).width + horizontalPadding * 2;
+
+    if (cursorX && cursorX + width > maxWidth) {
+      rows += 1;
+      cursorX = 0;
+    }
+
+    cursorX += width + gap;
+  });
+
+  return rows * height + (rows - 1) * gap;
+}
+
 function buildExportCanvas(reading) {
   const canvas = document.createElement("canvas");
   canvas.width = 1200;
   canvas.height = 1600;
-  const ctx = canvas.getContext("2d");
-
-  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  gradient.addColorStop(0, "#fff7ec");
-  gradient.addColorStop(0.55, "#fffdf9");
-  gradient.addColorStop(1, "#fff2e4");
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "rgba(255, 140, 107, 0.2)";
-  ctx.beginPath();
-  ctx.arc(1060, 220, 190, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "rgba(122, 211, 195, 0.18)";
-  ctx.beginPath();
-  ctx.arc(180, 1340, 220, 0, Math.PI * 2);
-  ctx.fill();
-
-  fillRoundedRect(ctx, 60, 60, 1080, 1480, 44, "rgba(255, 252, 247, 0.9)");
-  strokeRoundedRect(ctx, 60, 60, 1080, 1480, 44, "rgba(47, 38, 31, 0.08)", 2);
-
-  ctx.fillStyle = "#ff6b45";
-  ctx.font = '28px "Jua", sans-serif';
-  ctx.fillText("DANGNYANG SAJU", 112, 138);
-
-  ctx.fillStyle = "#2f261f";
-  ctx.font = '54px "Jua", sans-serif';
-  ctx.fillText(`${reading.petName}의 사주 카드`, 112, 210);
-
-  ctx.fillStyle = "#716453";
-  ctx.font = '26px "Gowun Dodum", sans-serif';
-  ctx.fillText(`${petLabels[reading.petType]} · ${reading.breed.label} · ${reading.zodiac}띠`, 112, 256);
-
-  ctx.fillStyle = "#2f261f";
-  ctx.font = '78px "Jua", sans-serif';
-  ctx.fillText(reading.archetype, 112, 360);
-
-  ctx.fillStyle = "#716453";
-  ctx.font = '30px "Gowun Dodum", sans-serif';
-  let cursorY = drawWrappedText(ctx, reading.summary, 112, 426, 940, 46, 4);
-
-  ctx.font = '24px "Gowun Dodum", sans-serif';
-  cursorY = drawPills(
-    ctx,
-    [reading.primaryLabel, reading.secondaryLabel, ...reading.snapshotTags].slice(0, 6),
-    112,
-    cursorY + 28,
-    940
-  );
-
+  let ctx = canvas.getContext("2d");
+  const pillItems = [reading.primaryLabel, reading.secondaryLabel, ...reading.snapshotTags].slice(0, 6);
   const cards = [
     {
       title: "한눈에 보는 기질",
@@ -1157,6 +1135,60 @@ function buildExportCanvas(reading) {
     }
   ];
 
+  ctx.font = '30px "Gowun Dodum", sans-serif';
+  const summaryBottom = 426 + getWrappedLines(ctx, reading.summary, 940, 4).length * 46;
+  ctx.font = '24px "Gowun Dodum", sans-serif';
+  const pillsBottom = summaryBottom + 28 + measurePillsHeight(ctx, pillItems, 940);
+  const cardsStartY = pillsBottom + 34;
+  const footerY = cardsStartY + cards.length * 228 + 24;
+  const canvasHeight = Math.max(1760, footerY + 216);
+
+  canvas.height = canvasHeight;
+  ctx = canvas.getContext("2d");
+
+  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  gradient.addColorStop(0, "#fff7ec");
+  gradient.addColorStop(0.55, "#fffdf9");
+  gradient.addColorStop(1, "#fff2e4");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "rgba(255, 140, 107, 0.2)";
+  ctx.beginPath();
+  ctx.arc(1060, 220, 190, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(122, 211, 195, 0.18)";
+  ctx.beginPath();
+  ctx.arc(180, canvas.height - 260, 220, 0, Math.PI * 2);
+  ctx.fill();
+
+  fillRoundedRect(ctx, 60, 60, 1080, canvas.height - 120, 44, "rgba(255, 252, 247, 0.9)");
+  strokeRoundedRect(ctx, 60, 60, 1080, canvas.height - 120, 44, "rgba(47, 38, 31, 0.08)", 2);
+
+  ctx.fillStyle = "#ff6b45";
+  ctx.font = '28px "Jua", sans-serif';
+  ctx.fillText("DANGNYANG SAJU", 112, 138);
+
+  ctx.fillStyle = "#2f261f";
+  ctx.font = '54px "Jua", sans-serif';
+  ctx.fillText(`${reading.petName}의 사주 카드`, 112, 210);
+
+  ctx.fillStyle = "#716453";
+  ctx.font = '26px "Gowun Dodum", sans-serif';
+  ctx.fillText(`${petLabels[reading.petType]} · ${reading.breed.label} · ${reading.zodiac}띠`, 112, 256);
+
+  ctx.fillStyle = "#2f261f";
+  ctx.font = '78px "Jua", sans-serif';
+  ctx.fillText(reading.archetype, 112, 360);
+
+  ctx.fillStyle = "#716453";
+  ctx.font = '30px "Gowun Dodum", sans-serif';
+  let cursorY = drawWrappedText(ctx, reading.summary, 112, 426, 940, 46, 4);
+
+  ctx.font = '24px "Gowun Dodum", sans-serif';
+  cursorY = drawPills(ctx, pillItems, 112, cursorY + 28, 940);
+
   cursorY += 34;
 
   cards.forEach((card, index) => {
@@ -1173,7 +1205,6 @@ function buildExportCanvas(reading) {
     drawWrappedText(ctx, card.body, 146, cardY + 96, 908, 40, 3);
   });
 
-  const footerY = 1336;
   fillRoundedRect(ctx, 112, footerY, 976, 156, 32, "rgba(47, 38, 31, 0.92)");
 
   ctx.fillStyle = "#ffd980";
