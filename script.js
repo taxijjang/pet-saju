@@ -48,6 +48,8 @@ const buttonDefaultLabels = new Map([
   [shareButton, "공유 링크"],
   [exportButton, "이미지 저장"]
 ]);
+const siteUrl = "https://pet-saju.pages.dev/";
+const exportQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=${encodeURIComponent(siteUrl)}`;
 
 const breedCatalog = {
   dog: [
@@ -1107,7 +1109,17 @@ function measurePillsHeight(ctx, items, maxWidth) {
   return rows * height + (rows - 1) * gap;
 }
 
-function buildExportCanvas(reading) {
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+    image.src = src;
+  });
+}
+
+async function buildExportCanvas(reading) {
   const canvas = document.createElement("canvas");
   canvas.width = 1200;
   canvas.height = 1600;
@@ -1167,21 +1179,47 @@ function buildExportCanvas(reading) {
   fillRoundedRect(ctx, 60, 60, 1080, canvas.height - 120, 44, "rgba(255, 252, 247, 0.9)");
   strokeRoundedRect(ctx, 60, 60, 1080, canvas.height - 120, 44, "rgba(47, 38, 31, 0.08)", 2);
 
+  const qrBoxX = 848;
+  const qrBoxY = 104;
+  const qrBoxSize = 208;
+  const qrImageX = qrBoxX + 14;
+  const qrImageY = qrBoxY + 14;
+  const qrImageSize = 180;
+  const headerTextWidth = 680;
+
+  fillRoundedRect(ctx, qrBoxX, qrBoxY, qrBoxSize, 238, 28, "rgba(255, 255, 255, 0.9)");
+  strokeRoundedRect(ctx, qrBoxX, qrBoxY, qrBoxSize, 238, 28, "rgba(47, 38, 31, 0.08)");
+
+  try {
+    const qrImage = await loadImage(exportQrCodeUrl);
+    ctx.drawImage(qrImage, qrImageX, qrImageY, qrImageSize, qrImageSize);
+  } catch (error) {
+    fillRoundedRect(ctx, qrImageX, qrImageY, qrImageSize, qrImageSize, 20, "rgba(255, 247, 236, 0.95)");
+    strokeRoundedRect(ctx, qrImageX, qrImageY, qrImageSize, qrImageSize, 20, "rgba(47, 38, 31, 0.08)");
+    ctx.fillStyle = "#716453";
+    ctx.font = '24px "Jua", sans-serif';
+    ctx.fillText("QR 준비 중", qrBoxX + 56, qrBoxY + 116);
+  }
+
+  ctx.fillStyle = "#ff6b45";
+  ctx.font = '24px "Jua", sans-serif';
+  ctx.fillText("QR로 바로 보기", qrBoxX + 36, qrBoxY + 224);
+
   ctx.fillStyle = "#ff6b45";
   ctx.font = '28px "Jua", sans-serif';
   ctx.fillText("DANGNYANG SAJU", 112, 138);
 
   ctx.fillStyle = "#2f261f";
   ctx.font = '54px "Jua", sans-serif';
-  ctx.fillText(`${reading.petName}의 사주 카드`, 112, 210);
+  ctx.fillText(`${reading.petName}의 사주 카드`, 112, 210, headerTextWidth);
 
   ctx.fillStyle = "#716453";
   ctx.font = '26px "Gowun Dodum", sans-serif';
-  ctx.fillText(`${petLabels[reading.petType]} · ${reading.breed.label} · ${reading.zodiac}띠`, 112, 256);
+  ctx.fillText(`${petLabels[reading.petType]} · ${reading.breed.label} · ${reading.zodiac}띠`, 112, 256, headerTextWidth);
 
   ctx.fillStyle = "#2f261f";
   ctx.font = '78px "Jua", sans-serif';
-  ctx.fillText(reading.archetype, 112, 360);
+  ctx.fillText(reading.archetype, 112, 360, headerTextWidth);
 
   ctx.fillStyle = "#716453";
   ctx.font = '30px "Gowun Dodum", sans-serif';
@@ -1287,14 +1325,24 @@ shareButton.addEventListener("click", async () => {
   }
 });
 
-exportButton.addEventListener("click", () => {
+exportButton.addEventListener("click", async () => {
   if (!currentReading) {
     return;
   }
 
-  const canvas = buildExportCanvas(currentReading);
-  downloadCanvas(canvas, `댕냥사주-${currentReading.petName}.png`);
-  flashButtonLabel(exportButton, "이미지 저장됨");
+  exportButton.disabled = true;
+  exportButton.textContent = "이미지 준비 중";
+
+  try {
+    const canvas = await buildExportCanvas(currentReading);
+    downloadCanvas(canvas, `댕냥사주-${currentReading.petName}.png`);
+    flashButtonLabel(exportButton, "이미지 저장됨");
+  } catch (error) {
+    exportButton.textContent = buttonDefaultLabels.get(exportButton);
+    flashButtonLabel(exportButton, "저장 실패");
+  } finally {
+    exportButton.disabled = false;
+  }
 });
 
 function buildElementScores(seedText, birthDate, birthTime) {
