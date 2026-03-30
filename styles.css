@@ -309,6 +309,13 @@ button {
   font-size: 2rem;
 }
 
+.result-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .field-stack {
   display: grid;
   gap: 18px;
@@ -477,6 +484,10 @@ button {
   box-shadow: inset 0 0 0 1px rgba(47, 38, 31, 0.08);
 }
 
+.ghost-button.warm {
+  background: linear-gradient(135deg, rgba(255, 217, 128, 0.45), rgba(255, 140, 107, 0.22));
+}
+
 .cta-button {
   justify-self: start;
   padding: 15px 22px;
@@ -607,55 +618,46 @@ button {
   box-shadow: inset 0 0 0 1px rgba(72, 187, 166, 0.2);
 }
 
-.energy-card {
+.snapshot-card {
   margin-top: 24px;
   padding: 20px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.74);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.82), rgba(122, 211, 195, 0.16));
   border: 1px solid rgba(47, 38, 31, 0.08);
 }
 
-.energy-header {
+.snapshot-header {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   font-size: 0.95rem;
 }
 
-.energy-header strong {
+.snapshot-header strong {
   font-family: "Jua", sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.12rem;
 }
 
-.energy-bars {
-  display: grid;
-  gap: 12px;
+.snapshot-body {
+  margin: 0;
+  color: var(--muted);
 }
 
-.energy-row {
-  display: grid;
-  grid-template-columns: 38px 1fr 44px;
-  gap: 12px;
-  align-items: center;
+.snapshot-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
 }
 
-.energy-track {
-  position: relative;
-  height: 14px;
+.snapshot-tags span {
+  padding: 8px 13px;
   border-radius: 999px;
-  background: rgba(47, 38, 31, 0.08);
-  overflow: hidden;
-}
-
-.energy-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 0;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--mint), var(--coral));
-  animation: grow-bar 0.8s ease forwards;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(47, 38, 31, 0.08);
+  font-size: 0.92rem;
 }
 
 .type-strip {
@@ -740,16 +742,6 @@ button {
   }
 }
 
-@keyframes grow-bar {
-  from {
-    width: 0;
-  }
-
-  to {
-    width: var(--fill-width);
-  }
-}
-
 @media (max-width: 960px) {
   .hero,
   .workspace {
@@ -804,21 +796,20 @@ button {
   }
 
   .section-heading,
-  .energy-header,
+  .snapshot-header,
   .form-footer {
     align-items: start;
     flex-direction: column;
+  }
+
+  .result-actions {
+    width: 100%;
   }
 
   .fortune-stamp {
     width: 100%;
     aspect-ratio: auto;
     min-height: 72px;
-  }
-
-  .energy-row {
-    grid-template-columns: 30px 1fr 40px;
-    gap: 10px;
   }
 
   .cta-button,

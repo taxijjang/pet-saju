@@ -3,7 +3,10 @@ const petTypeInput = document.querySelector("#pet-type");
 const petOptions = document.querySelectorAll(".pet-option");
 const keywordButtons = document.querySelectorAll(".keyword-chip");
 const sampleButton = document.querySelector("#sample-button");
+const resultActions = document.querySelector("#result-actions");
 const copyButton = document.querySelector("#copy-button");
+const shareButton = document.querySelector("#share-button");
+const exportButton = document.querySelector("#export-button");
 const submitButton = document.querySelector("#submit-button");
 const resultPlaceholder = document.querySelector("#result-placeholder");
 const resultContent = document.querySelector("#result-content");
@@ -12,8 +15,9 @@ const resultBadges = document.querySelector("#result-badges");
 const resultTitle = document.querySelector("#result-title");
 const resultSummary = document.querySelector("#result-summary");
 const resultStamp = document.querySelector("#result-stamp");
-const energyHeadline = document.querySelector("#energy-headline");
-const energyBars = document.querySelector("#energy-bars");
+const snapshotHeadline = document.querySelector("#snapshot-headline");
+const snapshotBody = document.querySelector("#snapshot-body");
+const snapshotTags = document.querySelector("#snapshot-tags");
 const breedSelect = document.querySelector("#breed-select");
 const breedHint = document.querySelector("#breed-hint");
 const breedNamePreview = document.querySelector("#breed-name-preview");
@@ -36,6 +40,13 @@ const charmBody = document.querySelector("#charm-body");
 
 const keywordLimit = 3;
 const selectedKeywords = new Set();
+let currentReading = null;
+let currentState = null;
+const buttonDefaultLabels = new Map([
+  [copyButton, "요약 복사"],
+  [shareButton, "공유 링크"],
+  [exportButton, "이미지 저장"]
+]);
 
 const breedCatalog = {
   dog: [
@@ -743,6 +754,112 @@ function updateKeywordCount() {
   keywordCount.classList.toggle("full", selectedKeywords.size >= keywordLimit);
 }
 
+function setSelectedKeywords(keywords) {
+  const allowedKeywords = new Set([...keywordButtons].map((button) => button.dataset.keyword));
+  const nextKeywords = [];
+
+  keywords.forEach((keyword) => {
+    if (!allowedKeywords.has(keyword) || nextKeywords.includes(keyword) || nextKeywords.length >= keywordLimit) {
+      return;
+    }
+    nextKeywords.push(keyword);
+  });
+
+  selectedKeywords.clear();
+  keywordButtons.forEach((button) => {
+    const isSelected = nextKeywords.includes(button.dataset.keyword);
+    button.classList.toggle("selected", isSelected);
+    if (isSelected) {
+      selectedKeywords.add(button.dataset.keyword);
+    }
+  });
+  updateKeywordCount();
+}
+
+function flashButtonLabel(button, nextLabel) {
+  const defaultLabel = buttonDefaultLabels.get(button);
+  const existingTimer = Number(button.dataset.resetTimer || "0");
+
+  if (existingTimer) {
+    window.clearTimeout(existingTimer);
+  }
+
+  button.textContent = nextLabel;
+  button.dataset.resetTimer = String(
+    window.setTimeout(() => {
+      button.textContent = defaultLabel;
+      button.dataset.resetTimer = "";
+    }, 1800)
+  );
+}
+
+function shortLabel(label) {
+  return label.replace(" 기운", "");
+}
+
+function collectState(values) {
+  return {
+    petType: values.petType,
+    petName: values.petName.trim(),
+    guardianName: values.guardianName.trim(),
+    breed: values.breed,
+    birthDate: values.birthDate,
+    birthTime: values.birthTime || "",
+    keywords: [...selectedKeywords]
+  };
+}
+
+function buildShareUrl(state) {
+  const url = new URL(window.location.href);
+  url.search = "";
+  url.hash = "";
+
+  const params = new URLSearchParams();
+  params.set("type", state.petType);
+  params.set("name", state.petName);
+  params.set("breed", state.breed);
+  params.set("birth", state.birthDate);
+
+  if (state.guardianName) {
+    params.set("guardian", state.guardianName);
+  }
+
+  if (state.birthTime) {
+    params.set("time", state.birthTime);
+  }
+
+  if (state.keywords.length) {
+    params.set("keywords", state.keywords.join(","));
+  }
+
+  url.search = params.toString();
+  return url.toString();
+}
+
+function syncShareUrl(state) {
+  const shareUrl = buildShareUrl(state);
+
+  try {
+    const url = new URL(shareUrl);
+    const nextPath = `${url.pathname}${url.search}`;
+    window.history.replaceState(null, "", nextPath);
+  } catch (error) {
+    // Ignore history updates when the current environment does not support them.
+  }
+
+  return shareUrl;
+}
+
+function renderSnapshotTags(items) {
+  snapshotTags.replaceChildren();
+
+  items.forEach((item) => {
+    const tag = document.createElement("span");
+    tag.textContent = item;
+    snapshotTags.append(tag);
+  });
+}
+
 function updateFormState() {
   const hasRequiredFields = petNameInput.value.trim() && birthDateInput.value;
   submitButton.disabled = !hasRequiredFields;
@@ -824,46 +941,328 @@ sampleButton.addEventListener("click", () => {
   guardianNameInput.value = "서윤";
   birthDateInput.value = "2021-04-18";
   birthTimeInput.value = "08:10";
-
-  selectedKeywords.clear();
-  keywordButtons.forEach((button) => {
-    const shouldSelect = ["장난꾸러기", "먹보", "의젓함"].includes(button.dataset.keyword);
-    button.classList.toggle("selected", shouldSelect);
-    if (shouldSelect) {
-      selectedKeywords.add(button.dataset.keyword);
-    }
-  });
-  updateKeywordCount();
+  setSelectedKeywords(["장난꾸러기", "먹보", "의젓함"]);
   updateFormState();
 });
 
-copyButton.addEventListener("click", async () => {
-  const text = [
-    typeName.textContent,
-    typeCaption.textContent,
-    resultTitle.textContent,
-    resultSummary.textContent,
-    rhythmBody.textContent,
-    temperamentBody.textContent,
-    chemistryBody.textContent,
-    routineBody.textContent,
-    careBody.textContent,
-    luckBody.textContent,
-    charmBody.textContent
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const helper = document.createElement("textarea");
+  helper.value = text;
+  helper.setAttribute("readonly", "");
+  helper.style.position = "fixed";
+  helper.style.top = "-9999px";
+  helper.style.opacity = "0";
+  document.body.append(helper);
+  helper.select();
+  document.execCommand("copy");
+  helper.remove();
+}
+
+function buildSummaryText(reading) {
+  return [
+    `${reading.petName}의 댕냥 사주`,
+    `${reading.archetype}`,
+    "",
+    reading.summary,
+    "",
+    `한눈에 보는 기질: ${reading.snapshotHeadline}`,
+    reading.snapshotBody,
+    "",
+    `타고난 성향: ${reading.temperament}`,
+    `집사와의 케미: ${reading.chemistry}`,
+    `하루 루틴 힌트: ${reading.routine}`,
+    `돌봄 포인트: ${reading.care}`,
+    `행운 포인트: ${reading.luck}`,
+    `오늘의 부적: ${reading.charm}`
   ].join("\n");
+}
+
+function roundedRectPath(ctx, x, y, width, height, radius) {
+  const nextRadius = Math.min(radius, width / 2, height / 2);
+
+  ctx.beginPath();
+  ctx.moveTo(x + nextRadius, y);
+  ctx.lineTo(x + width - nextRadius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + nextRadius);
+  ctx.lineTo(x + width, y + height - nextRadius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - nextRadius, y + height);
+  ctx.lineTo(x + nextRadius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - nextRadius);
+  ctx.lineTo(x, y + nextRadius);
+  ctx.quadraticCurveTo(x, y, x + nextRadius, y);
+  ctx.closePath();
+}
+
+function fillRoundedRect(ctx, x, y, width, height, radius, fillStyle) {
+  ctx.save();
+  roundedRectPath(ctx, x, y, width, height, radius);
+  ctx.fillStyle = fillStyle;
+  ctx.fill();
+  ctx.restore();
+}
+
+function strokeRoundedRect(ctx, x, y, width, height, radius, strokeStyle, lineWidth = 1) {
+  ctx.save();
+  roundedRectPath(ctx, x, y, width, height, radius);
+  ctx.strokeStyle = strokeStyle;
+  ctx.lineWidth = lineWidth;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = "";
+
+  words.forEach((word) => {
+    const candidate = currentLine ? `${currentLine} ${word}` : word;
+    if (ctx.measureText(candidate).width <= maxWidth || !currentLine) {
+      currentLine = candidate;
+      return;
+    }
+
+    lines.push(currentLine);
+    currentLine = word;
+  });
+
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+
+  const visibleLines = typeof maxLines === "number" ? lines.slice(0, maxLines) : lines;
+
+  if (typeof maxLines === "number" && lines.length > maxLines) {
+    const lastIndex = visibleLines.length - 1;
+    let lastLine = visibleLines[lastIndex];
+
+    while (ctx.measureText(`${lastLine}...`).width > maxWidth && lastLine.length > 0) {
+      lastLine = lastLine.slice(0, -1);
+    }
+
+    visibleLines[lastIndex] = `${lastLine}...`;
+  }
+
+  visibleLines.forEach((line, index) => {
+    ctx.fillText(line, x, y + lineHeight * index);
+  });
+
+  return y + lineHeight * visibleLines.length;
+}
+
+function drawPills(ctx, items, startX, startY, maxWidth) {
+  let cursorX = startX;
+  let cursorY = startY;
+  const gap = 12;
+  const horizontalPadding = 16;
+  const height = 42;
+
+  items.forEach((item) => {
+    const width = ctx.measureText(item).width + horizontalPadding * 2;
+
+    if (cursorX + width > startX + maxWidth) {
+      cursorX = startX;
+      cursorY += height + gap;
+    }
+
+    fillRoundedRect(ctx, cursorX, cursorY, width, height, 21, "rgba(255, 255, 255, 0.82)");
+    strokeRoundedRect(ctx, cursorX, cursorY, width, height, 21, "rgba(47, 38, 31, 0.08)");
+    ctx.fillText(item, cursorX + horizontalPadding, cursorY + 27);
+    cursorX += width + gap;
+  });
+
+  return cursorY + height;
+}
+
+function buildExportCanvas(reading) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1200;
+  canvas.height = 1600;
+  const ctx = canvas.getContext("2d");
+
+  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  gradient.addColorStop(0, "#fff7ec");
+  gradient.addColorStop(0.55, "#fffdf9");
+  gradient.addColorStop(1, "#fff2e4");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "rgba(255, 140, 107, 0.2)";
+  ctx.beginPath();
+  ctx.arc(1060, 220, 190, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(122, 211, 195, 0.18)";
+  ctx.beginPath();
+  ctx.arc(180, 1340, 220, 0, Math.PI * 2);
+  ctx.fill();
+
+  fillRoundedRect(ctx, 60, 60, 1080, 1480, 44, "rgba(255, 252, 247, 0.9)");
+  strokeRoundedRect(ctx, 60, 60, 1080, 1480, 44, "rgba(47, 38, 31, 0.08)", 2);
+
+  ctx.fillStyle = "#ff6b45";
+  ctx.font = '28px "Jua", sans-serif';
+  ctx.fillText("DANGNYANG SAJU", 112, 138);
+
+  ctx.fillStyle = "#2f261f";
+  ctx.font = '54px "Jua", sans-serif';
+  ctx.fillText(`${reading.petName}의 사주 카드`, 112, 210);
+
+  ctx.fillStyle = "#716453";
+  ctx.font = '26px "Gowun Dodum", sans-serif';
+  ctx.fillText(`${petLabels[reading.petType]} · ${reading.breed.label} · ${reading.zodiac}띠`, 112, 256);
+
+  ctx.fillStyle = "#2f261f";
+  ctx.font = '78px "Jua", sans-serif';
+  ctx.fillText(reading.archetype, 112, 360);
+
+  ctx.fillStyle = "#716453";
+  ctx.font = '30px "Gowun Dodum", sans-serif';
+  let cursorY = drawWrappedText(ctx, reading.summary, 112, 426, 940, 46, 4);
+
+  ctx.font = '24px "Gowun Dodum", sans-serif';
+  cursorY = drawPills(
+    ctx,
+    [reading.primaryLabel, reading.secondaryLabel, ...reading.snapshotTags].slice(0, 6),
+    112,
+    cursorY + 28,
+    940
+  );
+
+  const cards = [
+    {
+      title: "한눈에 보는 기질",
+      body: `${reading.snapshotHeadline}. ${reading.snapshotBody}`,
+      fill: "rgba(255, 244, 214, 0.9)"
+    },
+    {
+      title: "타고난 성향",
+      body: reading.temperament,
+      fill: "rgba(255, 255, 255, 0.88)"
+    },
+    {
+      title: "집사와의 케미",
+      body: reading.chemistry,
+      fill: "rgba(240, 251, 248, 0.92)"
+    },
+    {
+      title: "행운 포인트",
+      body: reading.luck,
+      fill: "rgba(255, 244, 236, 0.9)"
+    }
+  ];
+
+  cursorY += 34;
+
+  cards.forEach((card, index) => {
+    const cardY = cursorY + index * 228;
+    fillRoundedRect(ctx, 112, cardY, 976, 196, 28, card.fill);
+    strokeRoundedRect(ctx, 112, cardY, 976, 196, 28, "rgba(47, 38, 31, 0.08)");
+
+    ctx.fillStyle = "#ff6b45";
+    ctx.font = '28px "Jua", sans-serif';
+    ctx.fillText(card.title, 146, cardY + 52);
+
+    ctx.fillStyle = "#4f4338";
+    ctx.font = '27px "Gowun Dodum", sans-serif';
+    drawWrappedText(ctx, card.body, 146, cardY + 96, 908, 40, 3);
+  });
+
+  const footerY = 1336;
+  fillRoundedRect(ctx, 112, footerY, 976, 156, 32, "rgba(47, 38, 31, 0.92)");
+
+  ctx.fillStyle = "#ffd980";
+  ctx.font = '24px "Jua", sans-serif';
+  ctx.fillText("오늘의 부적", 146, footerY + 48);
+
+  ctx.fillStyle = "#fff8ef";
+  ctx.font = '31px "Gowun Dodum", sans-serif';
+  drawWrappedText(ctx, reading.charm, 146, footerY + 92, 908, 42, 2);
+
+  return canvas;
+}
+
+function downloadCanvas(canvas, fileName) {
+  if (canvas.toBlob) {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        return;
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, "image/png");
+    return;
+  }
+
+  const link = document.createElement("a");
+  link.href = canvas.toDataURL("image/png");
+  link.download = fileName;
+  link.click();
+}
+
+copyButton.addEventListener("click", async () => {
+  if (!currentReading) {
+    return;
+  }
 
   try {
-    await navigator.clipboard.writeText(text);
-    copyButton.textContent = "복사 완료";
-    window.setTimeout(() => {
-      copyButton.textContent = "요약 복사";
-    }, 1600);
+    await copyTextToClipboard(buildSummaryText(currentReading));
+    flashButtonLabel(copyButton, "복사 완료");
   } catch (error) {
-    copyButton.textContent = "복사 실패";
-    window.setTimeout(() => {
-      copyButton.textContent = "요약 복사";
-    }, 1600);
+    flashButtonLabel(copyButton, "복사 실패");
   }
+});
+
+shareButton.addEventListener("click", async () => {
+  if (!currentReading || !currentState) {
+    return;
+  }
+
+  const shareUrl = syncShareUrl(currentState);
+  const shareData = {
+    title: `${currentReading.petName}의 댕냥 사주`,
+    text: `${currentReading.archetype} · ${currentReading.summary}`,
+    url: shareUrl
+  };
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      flashButtonLabel(shareButton, "공유 완료");
+      return;
+    } catch (error) {
+      if (error?.name === "AbortError") {
+        return;
+      }
+    }
+  }
+
+  try {
+    await copyTextToClipboard(shareUrl);
+    flashButtonLabel(shareButton, "링크 복사됨");
+  } catch (error) {
+    flashButtonLabel(shareButton, "복사 실패");
+  }
+});
+
+exportButton.addEventListener("click", () => {
+  if (!currentReading) {
+    return;
+  }
+
+  const canvas = buildExportCanvas(currentReading);
+  downloadCanvas(canvas, `댕냥사주-${currentReading.petName}.png`);
+  flashButtonLabel(exportButton, "이미지 저장됨");
 });
 
 function buildElementScores(seedText, birthDate, birthTime) {
@@ -881,32 +1280,6 @@ function buildElementScores(seedText, birthDate, birthTime) {
       name,
       score: clamp(base + spice, 28, 98)
     };
-  });
-}
-
-function renderEnergyBars(scores) {
-  energyBars.replaceChildren();
-
-  scores.forEach((entry) => {
-    const row = document.createElement("div");
-    row.className = "energy-row";
-
-    const label = document.createElement("span");
-    label.textContent = entry.name;
-
-    const track = document.createElement("div");
-    track.className = "energy-track";
-
-    const fill = document.createElement("div");
-    fill.className = "energy-fill";
-    fill.style.setProperty("--fill-width", `${entry.score}%`);
-    track.append(fill);
-
-    const value = document.createElement("strong");
-    value.textContent = `${entry.score}`;
-
-    row.append(label, track, value);
-    energyBars.append(row);
   });
 }
 
@@ -946,8 +1319,8 @@ function buildReading(values) {
     ? keywords.map((keyword) => pick(keywordProfiles[keyword].care, random)).join(" ")
     : "좋아하는 자극과 싫어하는 자극을 천천히 기록해두면 해석이 더 맞아떨어져요.";
   const balanceLine = primary.score - secondary.score >= 9
-    ? `${primary.name} 기운이 또렷하게 앞서서 기질의 중심축이 비교적 분명한 편이에요.`
-    : `${primary.name}과 ${secondary.name} 기운이 가까워서 여러 매력이 함께 보이는 균형형이에요.`;
+    ? `${primaryProfile.label}이 조금 더 선명해서 평소 기질의 중심이 비교적 또렷한 편이에요.`
+    : `${primaryProfile.label}과 ${secondaryProfile.label}이 고르게 섞여 여러 매력이 함께 보이는 균형형이에요.`;
 
   const summary = `${petName}는 ${breed.label} 특유의 ${breed.vibe} 결 위에 ${primaryProfile.label}이 중심을 잡고 ${
     secondaryProfile.label
@@ -969,7 +1342,7 @@ function buildReading(values) {
 
   const chemistry = `${guardianName} 님과의 케미는 ${pick(secondaryProfile.chemistry, random)} ${
     breed.social
-  } 특히 ${primary.name} 기운이 강하게 올라오는 날에는 칭찬, 간식, 눈맞춤처럼 즉각적인 반응이 관계를 더 깊게 만들어요.`;
+  } 특히 ${primaryProfile.label}이 또렷하게 느껴지는 날에는 칭찬, 간식, 눈맞춤처럼 즉각적인 반응이 관계를 더 깊게 만들어요.`;
 
   const routine = `${breed.routine} ${pick(primaryProfile.rhythm, random)} ${pick(
     [timeProfile.rhythm, pick(secondaryProfile.rhythm, random)],
@@ -990,18 +1363,32 @@ function buildReading(values) {
     random
   )}`;
 
+  const snapshotHeadline = `${shortLabel(primaryProfile.label)} 중심 · ${shortLabel(secondaryProfile.label)} 보조`;
+  const snapshotBody = `${petName}는 ${primaryProfile.tags.join(" · ")} 흐름이 먼저 보이고, ${
+    secondaryProfile.tags.join(" · ")
+  } 결이 옆에서 매력을 더해줘요. ${balanceLine}`;
+  const snapshotTags = [...primaryProfile.tags, ...secondaryProfile.tags, ...keywords].filter(
+    (item, index, array) => array.indexOf(item) === index
+  );
+
   return {
     petType,
     petName,
     guardianName,
     breed,
     zodiac,
+    timeLabel: timeProfile.label,
     primary,
     secondary,
     primaryLabel: primaryProfile.label,
     secondaryLabel: secondaryProfile.label,
+    primaryProfile,
+    secondaryProfile,
     archetype,
     summary,
+    snapshotHeadline,
+    snapshotBody,
+    snapshotTags,
     typeSummary,
     rhythm,
     temperament,
@@ -1014,26 +1401,24 @@ function buildReading(values) {
   };
 }
 
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
+function renderReading(reading, values, options = {}) {
+  currentReading = reading;
+  currentState = collectState(values);
+  syncShareUrl(currentState);
 
-  const values = Object.fromEntries(new FormData(form).entries());
-  if (!values.petName || !values.birthDate) {
-    return;
-  }
-
-  const reading = buildReading(values);
   renderBadges([
     petLabels[reading.petType],
     reading.breed.label,
     `${reading.zodiac}띠`,
-    `주 기운 ${reading.primary.name}`,
-    `보조 기운 ${reading.secondary.name}`
+    reading.primaryLabel,
+    reading.secondaryLabel
   ]);
-  resultTitle.textContent = `${reading.petName}의 타고난 기운은 ${reading.primary.name} 그리고 ${reading.secondary.name}`;
+  resultTitle.textContent = `${reading.petName}의 타고난 기질은 ${reading.primaryLabel}과 ${reading.secondaryLabel}`;
   resultSummary.textContent = reading.summary;
-  resultStamp.textContent = `${reading.primary.name}${reading.secondary.name}\n${petLabels[reading.petType]}`;
-  energyHeadline.textContent = `${reading.primaryLabel} 주도형`;
+  resultStamp.textContent = `${shortLabel(reading.primaryLabel)}\n${petLabels[reading.petType]}`;
+  snapshotHeadline.textContent = reading.snapshotHeadline;
+  snapshotBody.textContent = reading.snapshotBody;
+  renderSnapshotTags(reading.snapshotTags);
   typeName.textContent = reading.archetype;
   typeCaption.textContent = reading.typeSummary;
   rhythmBody.textContent = reading.rhythm;
@@ -1043,17 +1428,54 @@ form.addEventListener("submit", (event) => {
   careBody.textContent = reading.care;
   luckBody.textContent = reading.luck;
   charmBody.textContent = reading.charm;
-  renderEnergyBars(reading.scores);
 
   resultPlaceholder.classList.add("hidden");
   resultContent.classList.remove("hidden");
-  copyButton.classList.remove("hidden");
+  resultActions.classList.remove("hidden");
 
-  if (window.matchMedia("(max-width: 960px)").matches) {
+  if (options.scroll !== false && window.matchMedia("(max-width: 960px)").matches) {
     resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+}
+
+function restoreStateFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+
+  if (!params.size) {
+    return;
+  }
+
+  const petType = params.get("type") === "cat" ? "cat" : "dog";
+  const preferredBreed = params.get("breed") || undefined;
+  setPetType(petType, preferredBreed);
+
+  petNameInput.value = params.get("name") || "";
+  guardianNameInput.value = params.get("guardian") || "";
+  birthDateInput.value = params.get("birth") || "";
+  birthTimeInput.value = params.get("time") || "";
+  setSelectedKeywords((params.get("keywords") || "").split(",").filter(Boolean));
+  updateFormState();
+
+  const values = Object.fromEntries(new FormData(form).entries());
+  if (!values.petName || !values.birthDate) {
+    return;
+  }
+
+  renderReading(buildReading(values), values, { scroll: false });
+}
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const values = Object.fromEntries(new FormData(form).entries());
+  if (!values.petName || !values.birthDate) {
+    return;
+  }
+
+  renderReading(buildReading(values), values);
 });
 
 setPetType("dog", "maltese");
 updateKeywordCount();
 updateFormState();
+restoreStateFromUrl();
