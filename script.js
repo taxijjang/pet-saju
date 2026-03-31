@@ -1842,14 +1842,14 @@ function buildReading(values, language = currentLanguage) {
   const keywordTraitLine = keywords.length
     ? keywords.map((keyword) => pick(getKeywordProfile(keyword, language).trait, random)).join(" ")
     : language === "ko"
-      ? "성격 키워드를 더 고르면 아이다운 결이 더 또렷하게 드러나요."
+      ? "성격 키워드를 더 고르면 이 아이만의 결이 한층 또렷해져요."
       : language === "ja"
         ? "性格キーワードを足すと、その子らしさがもっとくっきり見えてきます。"
         : "Add a few temperament keywords to make the reading feel even more like your pet.";
   const keywordCareLine = keywords.length
     ? keywords.map((keyword) => pick(getKeywordProfile(keyword, language).care, random)).join(" ")
     : language === "ko"
-      ? "좋아하는 자극과 싫어하는 자극을 천천히 기록해두면 해석이 더 맞아떨어져요."
+      ? "좋아하는 자극과 불편해하는 순간을 천천히 기록해두면 해석이 훨씬 정교해져요."
       : language === "ja"
         ? "好きな刺激と苦手な刺激をゆっくり記録していくと、読み取りがよりしっくりしやすくなります。"
         : "Keeping gentle notes on what they love and dislike makes the reading feel more spot on.";
@@ -1878,24 +1878,24 @@ function buildReading(values, language = currentLanguage) {
 
   if (language === "ko") {
     balanceLine = primary.score - secondary.score >= 9
-      ? `${primaryProfile.label}이 조금 더 선명해서 평소 기질의 중심이 비교적 또렷한 편이에요.`
-      : `${primaryProfile.label}과 ${secondaryProfile.label}이 고르게 섞여 여러 매력이 함께 보이는 균형형이에요.`;
-    summary = `${petName}는 ${baseBreed.label} 특유의 ${baseBreed.vibe} 결 위에 ${primaryProfile.label}이 중심을 잡고 ${secondaryProfile.label}이 옆에서 윤기를 더하는 타입이에요. ${seasonMood[season]} ${timeProfile.summary}`;
-    typeSummary = `${baseBreed.label}다운 ${baseBreed.vibe} 분위기에 ${primaryProfile.tags.join(" · ")} 흐름이 강하게 얹힌 아이예요. ${balanceLine}`;
-    rhythm = `${timeProfile.label}의 결이 들어 있어 ${timeProfile.rhythm} ${pick(primaryProfile.rhythm, random)}`;
+      ? `${primaryProfile.label} 쪽 결이 조금 더 선명해서, 평소 분위기와 반응의 축이 비교적 또렷한 편이에요.`
+      : `${primaryProfile.label}과 ${secondaryProfile.label}이 고르게 포개져, 한쪽으로 치우치기보다 볼수록 매력이 깊어지는 균형형에 가까워요.`;
+    summary = `${petName}는 ${baseBreed.label} 특유의 ${baseBreed.vibe} 분위기 위에 ${primaryProfile.label}이 중심을 이루고, ${secondaryProfile.label}이 여운처럼 따라오는 아이예요. ${seasonMood[season]} ${timeProfile.summary}`;
+    typeSummary = `${baseBreed.label}다운 ${baseBreed.vibe} 인상에 ${primaryProfile.tags.join(" · ")} 흐름이 가장 선명하게 얹혀 있어요. ${balanceLine}`;
+    rhythm = `${timeProfile.label}의 결이 은근히 배어 있어 ${timeProfile.rhythm} ${pick(primaryProfile.rhythm, random)}`;
     temperament = `${pick(primaryProfile[petType], random)} ${pick(secondaryProfile[petType], random)} ${baseBreed.personality} ${keywordTraitLine}`;
-    chemistry = `${guardianName} 님과의 케미는 ${pick(secondaryProfile.chemistry, random)} ${baseBreed.social} 특히 ${primaryProfile.label}이 또렷하게 느껴지는 날에는 칭찬, 간식, 눈맞춤처럼 즉각적인 반응이 관계를 더 깊게 만들어요.`;
+    chemistry = `${guardianName} 님과의 케미는 ${pick(secondaryProfile.chemistry, random)} ${baseBreed.social} 특히 ${primaryProfile.label}의 기운이 또렷하게 올라오는 날에는 칭찬이나 간식, 짧은 눈맞춤처럼 바로 전해지는 반응이 관계의 온도를 빠르게 높여줘요.`;
     routine = `${baseBreed.routine} ${pick(primaryProfile.rhythm, random)} ${pick([timeProfile.rhythm, pick(secondaryProfile.rhythm, random)], random)}`;
     care = `${pick(primaryProfile.care, random)} ${keywordCareLine} ${baseBreed.care}`;
-    luck = `행운 컬러는 ${pick(primaryProfile.luck.colors, random)}, 행운 아이템은 ${pick(secondaryProfile.luck.items, random)}이에요. 오늘은 ${pick(primaryProfile.luck.spots, random)}에서 쉬거나 놀면 컨디션이 안정되고, ${pick(secondaryProfile.luck.snacks, random)} 같은 작은 보상이 기분 전환에 도움을 줘요.`;
-    charm = `${petName}의 부적 문장: ${pick([...primaryProfile.charms, ...secondaryProfile.charms, "좋아하는 존재를 믿는 마음이 오늘의 가장 큰 힘이 됩니다."], random)}`;
+    luck = `오늘의 행운 컬러는 ${pick(primaryProfile.luck.colors, random)}, 잘 맞는 아이템은 ${pick(secondaryProfile.luck.items, random)}이에요. ${pick(primaryProfile.luck.spots, random)} 가까이에서 쉬거나 놀면 흐름이 한결 부드러워지고, ${pick(secondaryProfile.luck.snacks, random)} 같은 작은 보상은 기분 전환에 특히 잘 맞아요.`;
+    charm = pick([...primaryProfile.charms, ...secondaryProfile.charms, "좋아하는 존재를 믿는 마음이 오늘의 가장 큰 힘이 됩니다."], random);
     snapshotHeadline = `${primaryShort} 중심 · ${secondaryShort} 보조`;
-    snapshotBody = `${petName}는 ${primaryProfile.tags.join(" · ")} 흐름이 먼저 보이고, ${secondaryProfile.tags.join(" · ")} 결이 옆에서 매력을 더해줘요. ${balanceLine}`;
-    resultTitleText = `${petName}의 타고난 기질은 ${primaryProfile.label}과 ${secondaryProfile.label}`;
+    snapshotBody = `${petName}에게서는 ${primaryProfile.tags.join(" · ")} 흐름이 먼저 읽히고, ${secondaryProfile.tags.join(" · ")} 결이 뒤에서 분위기를 더 풍성하게 받쳐줘요. ${balanceLine}`;
+    resultTitleText = `${petName}에게 가장 또렷한 기질은 ${primaryProfile.label}과 ${secondaryProfile.label}`;
     stampText = `${primaryShort}\n${badgePetLabel}`;
     rhythmTitleText = timeKey === "unknown" ? "차분한 기본 리듬" : `${timeProfile.label} 리듬`;
-    shareTitleText = `${petName}의 댕냥 사주`;
-    exportTitleText = `${petName}의 사주 카드`;
+    shareTitleText = `${petName}의 댕냥 사주 카드`;
+    exportTitleText = `${petName}의 기질 카드`;
     exportMetaText = `${badgePetLabel} · ${baseBreed.label} · ${zodiacBadge}`;
   } else {
     const groupCopy = i18n.groupReadingCopy[language][breed.groupKey];
@@ -1912,8 +1912,8 @@ function buildReading(values, language = currentLanguage) {
       chemistry = `With ${guardianName}, the chemistry feels like this: ${pick(secondaryProfile.chemistry, random)} ${groupCopy.social} On days when ${primaryProfile.label} shows up more clearly, quick praise, treats, or warm eye contact deepen the bond fast.`;
       routine = `${groupCopy.routine} ${pick(primaryProfile.rhythm, random)} ${pick([timeProfile.rhythm, pick(secondaryProfile.rhythm, random)], random)}`;
       care = `${pick(primaryProfile.care, random)} ${keywordCareLine} ${groupCopy.care}`;
-      luck = `Lucky color: ${pick(primaryProfile.luck.colors, random)}. Lucky item: ${pick(secondaryProfile.luck.items, random)}. Resting or playing near ${pick(primaryProfile.luck.spots, random)} helps the mood settle today, and a tiny reward like ${pick(secondaryProfile.luck.snacks, random)} can brighten the whole flow.`;
-      charm = `${petName}'s charm line: ${pick([...primaryProfile.charms, ...secondaryProfile.charms, "Trusting the ones you love becomes today's strongest lucky charm."], random)}`;
+      luck = `Today's lucky color is ${pick(primaryProfile.luck.colors, random)}, and the best-matched item is ${pick(secondaryProfile.luck.items, random)}. Spending time near ${pick(primaryProfile.luck.spots, random)} helps the mood settle, and a tiny reward like ${pick(secondaryProfile.luck.snacks, random)} can brighten the whole flow.`;
+      charm = pick([...primaryProfile.charms, ...secondaryProfile.charms, "Trusting the ones you love becomes today's strongest lucky charm."], random);
       snapshotHeadline = `${primaryShort} leads · ${secondaryShort} supports`;
       snapshotBody = `${petName} first reads as ${primaryProfile.tags.join(" · ")}, then ${secondaryProfile.tags.join(" · ")} comes in to soften and deepen the charm. ${balanceLine}`;
       resultTitleText = `${petName}'s energy leans toward ${primaryProfile.label} + ${secondaryProfile.label}`;
@@ -1933,8 +1933,8 @@ function buildReading(values, language = currentLanguage) {
       chemistry = `${guardianName} さんとの相性はこんな感じです。${pick(secondaryProfile.chemistry, random)} ${groupCopy.social} とくに ${primaryProfile.label} がくっきり出る日は、ほめ言葉やおやつ、目を合わせるような反応が距離をぐっと縮めます。`;
       routine = `${groupCopy.routine} ${pick(primaryProfile.rhythm, random)} ${pick([timeProfile.rhythm, pick(secondaryProfile.rhythm, random)], random)}`;
       care = `${pick(primaryProfile.care, random)} ${keywordCareLine} ${groupCopy.care}`;
-      luck = `ラッキーカラーは ${pick(primaryProfile.luck.colors, random)}、ラッキーアイテムは ${pick(secondaryProfile.luck.items, random)} です。今日は ${pick(primaryProfile.luck.spots, random)} で休んだり遊んだりすると流れが整いやすく、${pick(secondaryProfile.luck.snacks, random)} のような小さなごほうびが気分転換を助けてくれます。`;
-      charm = `${petName} のおまもりフレーズ: ${pick([...primaryProfile.charms, ...secondaryProfile.charms, "大好きな存在を信じる気持ちが、今日いちばんの力になりやすいです。"], random)}`;
+      luck = `ラッキーカラーは ${pick(primaryProfile.luck.colors, random)}、相性のいいアイテムは ${pick(secondaryProfile.luck.items, random)} です。今日は ${pick(primaryProfile.luck.spots, random)} で休んだり遊んだりすると流れが整いやすく、${pick(secondaryProfile.luck.snacks, random)} のような小さなごほうびが気分転換を助けてくれます。`;
+      charm = pick([...primaryProfile.charms, ...secondaryProfile.charms, "大好きな存在を信じる気持ちが、今日いちばんの力になりやすいです。"], random);
       snapshotHeadline = `${primaryShort} が主役 · ${secondaryShort} が補助`;
       snapshotBody = `${petName} はまず ${primaryProfile.tags.join(" · ")} の流れが見え、その横で ${secondaryProfile.tags.join(" · ")} の気配が魅力を深めます。${balanceLine}`;
       resultTitleText = `${petName} の気質は ${primaryProfile.label} と ${secondaryProfile.label} が中心`;

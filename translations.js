@@ -7,11 +7,11 @@
   },
   uiCopy: {
     ko: {
-      pageTitle: "댕냥 사주 | 강아지 사주·고양이 사주 성향 카드",
-      pageDescription: "강아지 사주, 고양이 사주를 생일과 성격 키워드로 가볍게 풀어보는 반려동물 성향 카드. 집사 궁합, 돌봄 포인트, 오늘의 행운 포인트까지 한 번에 확인해보세요.",
+      pageTitle: "강아지 사주·고양이 사주 | 댕냥 사주 기질 카드",
+      pageDescription: "강아지 사주, 고양이 사주를 생일과 성격 키워드로 바로 확인하세요. 반려동물 기질, 집사 궁합, 돌봄 포인트를 한 장 카드로 정리해줍니다.",
       ogSiteName: "댕냥 사주",
-      ogTitle: "댕냥 사주 | 강아지 사주·고양이 사주 성향 카드",
-      ogDescription: "강아지 사주와 고양이 사주를 생일, 품종, 성격 키워드로 귀엽고 가볍게 풀어보세요. 반려동물 기질과 집사 궁합을 한 장 카드로 확인할 수 있어요.",
+      ogTitle: "우리 집 강아지·고양이 사주, 지금 바로 뽑아보세요 | 댕냥 사주",
+      ogDescription: "생일, 품종, 성격 키워드만 넣으면 반려동물 기질과 집사 궁합이 바로 나와요. 저장하고 공유하기 좋은 카드형 결과.",
       ogImageAlt: "댕냥 사주 링크 미리보기 이미지",
       fallbackGuardian: "집사",
       brand: { aria: "댕냥 사주", subtitle: "강아지와 고양이를 위한 사주 카드", chip: "강아지 · 고양이" },
@@ -122,11 +122,11 @@
       }
     },
     en: {
-      pageTitle: "Dangnyang Saju | A fortune-style card for your dog or cat",
-      pageDescription: "A playful personality card for pets, using birthday and temperament hints to read natural tendencies and chemistry.",
+      pageTitle: "Dog & Cat Saju | Dangnyang Vibe Card",
+      pageDescription: "Check your dog or cat's vibe card from birthday and temperament hints. Natural tendencies, human chemistry, and care cues come together in one quick read.",
       ogSiteName: "Dangnyang Saju",
-      ogTitle: "Dangnyang Saju | A fortune-style card for your dog or cat",
-      ogDescription: "Use birthday and personality keywords to explore your pet's vibe, chemistry, and lucky points in one sweet card.",
+      ogTitle: "Try your dog's or cat's vibe card now | Dangnyang Saju",
+      ogDescription: "Add birthday, breed, and temperament hints to get a shareable pet vibe card with chemistry and lucky cues.",
       ogImageAlt: "Dangnyang Saju social preview image",
       fallbackGuardian: "Guardian",
       brand: { aria: "Dangnyang Saju", subtitle: "Playful saju cards for dogs and cats", chip: "Dogs · Cats" },
@@ -237,11 +237,11 @@
       }
     },
     ja: {
-      pageTitle: "댕냥 사주 | わんこ・にゃんこの気質カード",
-      pageDescription: "誕生日や性格キーワードから、ペットの気質や相性をやさしく楽しく読む小さなサジュ風カードです。",
+      pageTitle: "わんこ・にゃんこサジュ | 댕냥 사주 気質カード",
+      pageDescription: "誕生日や性格キーワードから、うちの子の気質や相性、お世話のヒントを一枚のカードで気軽にチェックできます。",
       ogSiteName: "댕냥 사주",
-      ogTitle: "댕냥 사주 | わんこ・にゃんこの気質カード",
-      ogDescription: "誕生日と性格キーワードで、うちの子の気質や相性、ラッキーポイントをかわいくチェックできます。",
+      ogTitle: "うちの子のサジュ風カードを今すぐチェック | 댕냥 사주",
+      ogDescription: "誕生日、品種、性格キーワードを入れると、気質や相性をかわいく整理したカードがすぐ見られます。",
       ogImageAlt: "댕냥 사주 のリンクプレビュー画像",
       fallbackGuardian: "保護者",
       brand: { aria: "댕냥 사주", subtitle: "わんこ・にゃんこのためのサジュ風カード", chip: "わんこ · にゃんこ" },

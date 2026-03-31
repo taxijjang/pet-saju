@@ -895,6 +895,7 @@ button {
   .page {
     padding-top: 18px;
     padding-bottom: 28px;
+    padding-inline: 14px;
   }
 
   .brand-lockup {
@@ -920,6 +921,7 @@ button {
   .seo-panel,
   .hero {
     border-radius: 24px;
+    padding: 22px 18px;
   }
 
   .field-grid,
@@ -939,6 +941,13 @@ button {
 
   .result-actions {
     width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .result-actions .ghost-button.warm {
+    grid-column: 1 / -1;
   }
 
   .fortune-stamp {
@@ -951,6 +960,65 @@ button {
   .ghost-button {
     width: 100%;
     justify-self: stretch;
+  }
+
+  .result-placeholder {
+    min-height: 280px;
+    padding: 24px 18px;
+  }
+
+  .result-hero h3 {
+    font-size: clamp(1.6rem, 8.2vw, 2.15rem);
+  }
+
+  .result-badges {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .result-badges span,
+  .hero-tags span,
+  .seo-chip-list span,
+  .snapshot-tags span {
+    padding: 7px 12px;
+    font-size: 0.84rem;
+  }
+
+  .snapshot-card,
+  .type-card,
+  .result-block,
+  .faq-item {
+    padding: 18px;
+  }
+
+  .snapshot-header {
+    gap: 10px;
+  }
+
+  .snapshot-header strong,
+  .type-card h4,
+  .seo-card-title {
+    font-size: 1.25rem;
+  }
+
+  .hero-text,
+  .mini-caption,
+  .block-body,
+  .result-summary,
+  .seo-lead,
+  .seo-card-body,
+  .faq-item p {
+    font-size: 0.95rem;
+    line-height: 1.72;
+  }
+
+  .seo-grid,
+  .seo-stack {
+    gap: 18px;
+  }
+
+  .faq-list {
+    gap: 12px;
   }
 
   .status-note {
