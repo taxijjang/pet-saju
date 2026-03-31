@@ -7,14 +7,14 @@
   },
   uiCopy: {
     ko: {
-      pageTitle: "강아지 사주·고양이 사주 | 댕냥 사주 기질 카드",
+      pageTitle: "강아지 사주·고양이 사주 | 멍냥 사주 기질 카드",
       pageDescription: "강아지 사주, 고양이 사주를 생일과 성격 키워드로 바로 확인하세요. 반려동물 기질, 집사 궁합, 돌봄 포인트를 한 장 카드로 정리해줍니다.",
-      ogSiteName: "댕냥 사주",
-      ogTitle: "우리 집 강아지·고양이 사주, 지금 바로 뽑아보세요 | 댕냥 사주",
+      ogSiteName: "멍냥 사주",
+      ogTitle: "우리 집 강아지·고양이 사주, 지금 바로 뽑아보세요 | 멍냥 사주",
       ogDescription: "생일, 품종, 성격 키워드만 넣으면 반려동물 기질과 집사 궁합이 바로 나와요. 저장하고 공유하기 좋은 카드형 결과.",
-      ogImageAlt: "댕냥 사주 링크 미리보기 이미지",
+      ogImageAlt: "멍냥 사주 링크 미리보기 이미지",
       fallbackGuardian: "집사",
-      brand: { aria: "댕냥 사주", subtitle: "강아지와 고양이를 위한 사주 카드", chip: "강아지 · 고양이" },
+      brand: { aria: "멍냥 사주", subtitle: "강아지와 고양이를 위한 사주 카드", chip: "강아지 · 고양이" },
       lang: { switcher: "언어 선택" },
       hero: {
         line1Base: "우리 집 ",
@@ -32,7 +32,7 @@
         caption: "입력한 정보는 저장되지 않고 브라우저 안에서만 계산됩니다."
       },
       form: {
-        eyebrow: "댕냥 사주 프로필",
+        eyebrow: "멍냥 사주 프로필",
         title: "우리 아이 정보",
         sample: "샘플로 채우기",
         petTypeLabel: "반려동물 종류",
@@ -60,7 +60,7 @@
         keywordCount: (count, limit) => `${count} / ${limit} 선택`
       },
       result: {
-        eyebrow: "댕냥 사주 카드",
+        eyebrow: "멍냥 사주 카드",
         title: "결과",
         placeholderTitle: "사주 카드를 기다리는 중",
         placeholderBody: "아이 이름과 생일을 입력하면 이곳에 기질 요약, 성향 타입, 생활 해석, 행운 포인트가 채워집니다.",
@@ -100,7 +100,7 @@
       seo: {
         eyebrow: "강아지 사주 · 고양이 사주 가이드",
         title: "반려동물 사주를 더 쉽게 이해하는 방법",
-        lead: "댕냥 사주는 강아지 사주와 고양이 사주를 재미로 가볍게 풀어보는 반려동물 성향 카드예요. 생일, 태어난 시간, 품종, 성격 키워드를 바탕으로 반려견 성향, 반려묘 성향, 집사 궁합, 돌봄 포인트를 한 번에 보기 쉽게 정리해줍니다.",
+        lead: "멍냥 사주는 강아지 사주와 고양이 사주를 재미로 가볍게 풀어보는 반려동물 성향 카드예요. 생일, 태어난 시간, 품종, 성격 키워드를 바탕으로 반려견 성향, 반려묘 성향, 집사 궁합, 돌봄 포인트를 한 번에 보기 쉽게 정리해줍니다.",
         chip1: "강아지 사주",
         chip2: "고양이 사주",
         chip3: "반려동물 성향",
@@ -122,14 +122,14 @@
       }
     },
     en: {
-      pageTitle: "Dog & Cat Saju | Dangnyang Vibe Card",
+      pageTitle: "Dog & Cat Saju | Mungnyang Vibe Card",
       pageDescription: "Check your dog or cat's vibe card from birthday and temperament hints. Natural tendencies, human chemistry, and care cues come together in one quick read.",
-      ogSiteName: "Dangnyang Saju",
-      ogTitle: "Try your dog's or cat's vibe card now | Dangnyang Saju",
+      ogSiteName: "Mungnyang Saju",
+      ogTitle: "Try your dog's or cat's vibe card now | Mungnyang Saju",
       ogDescription: "Add birthday, breed, and temperament hints to get a shareable pet vibe card with chemistry and lucky cues.",
-      ogImageAlt: "Dangnyang Saju social preview image",
+      ogImageAlt: "Mungnyang Saju social preview image",
       fallbackGuardian: "Guardian",
-      brand: { aria: "Dangnyang Saju", subtitle: "Playful saju cards for dogs and cats", chip: "Dogs · Cats" },
+      brand: { aria: "Mungnyang Saju", subtitle: "Playful saju cards for dogs and cats", chip: "Dogs · Cats" },
       lang: { switcher: "Choose language" },
       hero: {
         line1Base: "A playful read for ",
@@ -147,7 +147,7 @@
         caption: "Nothing is stored. Everything is calculated right in your browser."
       },
       form: {
-        eyebrow: "Dangnyang Profile",
+        eyebrow: "Mungnyang Profile",
         title: "Tell us about your pet",
         sample: "Use sample",
         petTypeLabel: "Pet type",
@@ -175,7 +175,7 @@
         keywordCount: (count, limit) => `${count} / ${limit} selected`
       },
       result: {
-        eyebrow: "Dangnyang Card",
+        eyebrow: "Mungnyang Card",
         title: "Result",
         placeholderTitle: "Your card is waiting",
         placeholderBody: "Once you enter a name and birthday, this space fills with a vibe summary, a type name, daily care hints, and lucky points.",
@@ -215,7 +215,7 @@
       seo: {
         eyebrow: "Dog & Cat Guide",
         title: "How to read your pet's vibe card more easily",
-        lead: "Dangnyang Saju is a playful dog and cat fortune-style card that turns birthdays, birth time, breed hints, and temperament keywords into a quick personality read. It helps you check natural tendencies, care cues, and chemistry with a favorite human in one place.",
+        lead: "Mungnyang Saju is a playful dog and cat fortune-style card that turns birthdays, birth time, breed hints, and temperament keywords into a quick personality read. It helps you check natural tendencies, care cues, and chemistry with a favorite human in one place.",
         chip1: "Dog saju",
         chip2: "Cat saju",
         chip3: "Pet personality",
@@ -237,14 +237,14 @@
       }
     },
     ja: {
-      pageTitle: "わんこ・にゃんこサジュ | 댕냥 사주 気質カード",
+      pageTitle: "わんこ・にゃんこサジュ | 멍냥 사주 気質カード",
       pageDescription: "誕生日や性格キーワードから、うちの子の気質や相性、お世話のヒントを一枚のカードで気軽にチェックできます。",
-      ogSiteName: "댕냥 사주",
-      ogTitle: "うちの子のサジュ風カードを今すぐチェック | 댕냥 사주",
+      ogSiteName: "멍냥 사주",
+      ogTitle: "うちの子のサジュ風カードを今すぐチェック | 멍냥 사주",
       ogDescription: "誕生日、品種、性格キーワードを入れると、気質や相性をかわいく整理したカードがすぐ見られます。",
-      ogImageAlt: "댕냥 사주 のリンクプレビュー画像",
+      ogImageAlt: "멍냥 사주 のリンクプレビュー画像",
       fallbackGuardian: "保護者",
-      brand: { aria: "댕냥 사주", subtitle: "わんこ・にゃんこのためのサジュ風カード", chip: "わんこ · にゃんこ" },
+      brand: { aria: "멍냥 사주", subtitle: "わんこ・にゃんこのためのサジュ風カード", chip: "わんこ · にゃんこ" },
       lang: { switcher: "言語を選ぶ" },
       hero: {
         line1Base: "うちの ",
@@ -262,7 +262,7 @@
         caption: "入力した情報は保存されず、ブラウザの中だけで計算されます。"
       },
       form: {
-        eyebrow: "댕냥 プロフィール",
+        eyebrow: "멍냥 プロフィール",
         title: "うちの子の情報",
         sample: "サンプル入力",
         petTypeLabel: "ペットの種類",
@@ -290,7 +290,7 @@
         keywordCount: (count, limit) => `${count} / ${limit} 個選択`
       },
       result: {
-        eyebrow: "댕냥 カード",
+        eyebrow: "멍냥 カード",
         title: "結果",
         placeholderTitle: "カードを準備中",
         placeholderBody: "名前と誕生日を入れると、ここに気質の要約、タイプ名、暮らしのヒント、ラッキーポイントが表示されます。",
@@ -330,7 +330,7 @@
       seo: {
         eyebrow: "わんこ・にゃんこガイド",
         title: "うちの子の気質カードをもっとわかりやすく読むコツ",
-        lead: "댕냥 사주 は、わんこ・にゃんこのサジュ風カードを気軽に楽しめるサイトです。誕生日、生まれた時間、品種、性格キーワードをもとに、気質、相性、お世話のヒントをひと目でわかる形にまとめます。",
+        lead: "멍냥 사주 は、わんこ・にゃんこのサジュ風カードを気軽に楽しめるサイトです。誕生日、生まれた時間、品種、性格キーワードをもとに、気質、相性、お世話のヒントをひと目でわかる形にまとめます。",
         chip1: "わんこのサジュ",
         chip2: "にゃんこのサジュ",
         chip3: "ペットの気質",

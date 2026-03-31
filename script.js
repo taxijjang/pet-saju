@@ -1652,7 +1652,7 @@ async function buildExportCanvas(reading) {
 
   ctx.fillStyle = "#ff6b45";
   ctx.font = '28px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
-  ctx.fillText("DANGNYANG SAJU", 112, 138);
+  ctx.fillText("MUNGNYANG SAJU", 112, 138);
 
   ctx.fillStyle = "#2f261f";
   ctx.font = '54px "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif';
@@ -1778,7 +1778,7 @@ exportButton.addEventListener("click", async () => {
 
   try {
     const canvas = await buildExportCanvas(currentReading);
-    downloadCanvas(canvas, `dangnyang-saju-${currentReading.petName}.png`);
+    downloadCanvas(canvas, `mungnyang-saju-${currentReading.petName}.png`);
     flashButtonLabel(exportButton, getCopy(currentReading.language).actions.exportSuccess);
   } catch (error) {
     exportButton.textContent = buttonDefaultLabels.get(exportButton);
@@ -1894,7 +1894,7 @@ function buildReading(values, language = currentLanguage) {
     resultTitleText = `${petName}에게 가장 또렷한 기질은 ${primaryProfile.label}과 ${secondaryProfile.label}`;
     stampText = `${primaryShort}\n${badgePetLabel}`;
     rhythmTitleText = timeKey === "unknown" ? "차분한 기본 리듬" : `${timeProfile.label} 리듬`;
-    shareTitleText = `${petName}의 댕냥 사주 카드`;
+    shareTitleText = `${petName}의 멍냥 사주 카드`;
     exportTitleText = `${petName}의 기질 카드`;
     exportMetaText = `${badgePetLabel} · ${baseBreed.label} · ${zodiacBadge}`;
   } else {
@@ -1919,7 +1919,7 @@ function buildReading(values, language = currentLanguage) {
       resultTitleText = `${petName}'s energy leans toward ${primaryProfile.label} + ${secondaryProfile.label}`;
       stampText = `${primaryShort}\n${badgePetLabel}`;
       rhythmTitleText = timeKey === "unknown" ? "Default calm rhythm" : `${timeProfile.label} rhythm`;
-      shareTitleText = `${petName}'s Dangnyang reading`;
+      shareTitleText = `${petName}'s Mungnyang reading`;
       exportTitleText = `${petName}'s vibe card`;
       exportMetaText = `${badgePetLabel} · ${breed.label} · ${zodiacBadge}`;
     } else {
@@ -1940,7 +1940,7 @@ function buildReading(values, language = currentLanguage) {
       resultTitleText = `${petName} の気質は ${primaryProfile.label} と ${secondaryProfile.label} が中心`;
       stampText = `${primaryShort}\n${badgePetLabel}`;
       rhythmTitleText = timeKey === "unknown" ? "落ち着いた基本リズム" : `${timeProfile.label} リズム`;
-      shareTitleText = `${petName} の댕냥サジュ`;
+      shareTitleText = `${petName} の멍냥サジュ`;
       exportTitleText = `${petName} の気質カード`;
       exportMetaText = `${badgePetLabel} · ${breed.label} · ${zodiacBadge}`;
     }
