@@ -7,11 +7,11 @@
   },
   uiCopy: {
     ko: {
-      pageTitle: "댕냥 사주 | 우리 집 강아지·고양이 성향 카드",
-      pageDescription: "반려견과 반려묘의 생일, 태어난 시간, 성격 키워드로 타고난 기질과 집사 궁합을 귀엽게 풀어보는 성향 카드",
+      pageTitle: "댕냥 사주 | 강아지 사주·고양이 사주 성향 카드",
+      pageDescription: "강아지 사주, 고양이 사주를 생일과 성격 키워드로 가볍게 풀어보는 반려동물 성향 카드. 집사 궁합, 돌봄 포인트, 오늘의 행운 포인트까지 한 번에 확인해보세요.",
       ogSiteName: "댕냥 사주",
-      ogTitle: "댕냥 사주 | 우리 집 강아지·고양이 성향 카드",
-      ogDescription: "생일과 성격 키워드로 우리 아이의 타고난 기질, 집사 궁합, 행운 포인트를 바로 확인해보세요.",
+      ogTitle: "댕냥 사주 | 강아지 사주·고양이 사주 성향 카드",
+      ogDescription: "강아지 사주와 고양이 사주를 생일, 품종, 성격 키워드로 귀엽고 가볍게 풀어보세요. 반려동물 기질과 집사 궁합을 한 장 카드로 확인할 수 있어요.",
       ogImageAlt: "댕냥 사주 링크 미리보기 이미지",
       fallbackGuardian: "집사",
       brand: { aria: "댕냥 사주", subtitle: "강아지와 고양이를 위한 사주 카드", chip: "강아지 · 고양이" },
@@ -96,6 +96,29 @@
         care: "돌봄 포인트",
         luck: "행운 포인트",
         charm: "오늘의 부적"
+      },
+      seo: {
+        eyebrow: "강아지 사주 · 고양이 사주 가이드",
+        title: "반려동물 사주를 더 쉽게 이해하는 방법",
+        lead: "댕냥 사주는 강아지 사주와 고양이 사주를 재미로 가볍게 풀어보는 반려동물 성향 카드예요. 생일, 태어난 시간, 품종, 성격 키워드를 바탕으로 반려견 성향, 반려묘 성향, 집사 궁합, 돌봄 포인트를 한 번에 보기 쉽게 정리해줍니다.",
+        chip1: "강아지 사주",
+        chip2: "고양이 사주",
+        chip3: "반려동물 성향",
+        chip4: "집사 궁합",
+        howEyebrow: "입력 포인트",
+        howTitle: "이 4가지만 넣으면 결과가 또렷해져요",
+        howBody: "생일과 태어난 시간은 기질 리듬을, 품종은 기본 성향을, 성격 키워드는 아이의 실제 생활감을 보완합니다. 믹스견이나 믹스묘도 가장 비슷한 분위기를 선택하면 충분해요.",
+        whatEyebrow: "결과 포인트",
+        whatTitle: "이런 내용을 바로 확인할 수 있어요",
+        whatBody: "사주 타입, 기분 리듬, 타고난 성향, 집사와의 케미, 돌봄 포인트, 오늘의 부적까지 한 장 카드로 정리돼서 저장하거나 공유하기도 편합니다.",
+        faqEyebrow: "자주 묻는 질문",
+        faqTitle: "강아지 사주, 고양이 사주 FAQ",
+        faq1Q: "강아지 사주나 고양이 사주는 어떤 기준으로 나오나요?",
+        faq1A: "생일, 태어난 시간, 품종, 성격 키워드를 바탕으로 결과를 조합합니다. 정통 명리학 서비스를 그대로 옮겼다기보다, 반려동물의 분위기와 생활감을 귀엽고 일관되게 해석하는 카드에 가까워요.",
+        faq2Q: "태어난 시간을 모르면 결과가 많이 달라지나요?",
+        faq2A: "시간을 비워도 결과를 볼 수 있어요. 생일, 품종, 성격 키워드만으로도 기본 기질과 집사 궁합, 돌봄 포인트는 충분히 자연스럽게 정리됩니다.",
+        faq3Q: "강아지와 고양이 모두 사용할 수 있나요?",
+        faq3A: "네. 강아지와 고양이 모두 지원하고, 품종 설명과 문장 풀이도 각각 다르게 적용돼서 반려견 사주와 반려묘 사주를 한 사이트에서 가볍게 볼 수 있습니다."
       }
     },
     en: {
@@ -188,6 +211,29 @@
         care: "Care point",
         luck: "Lucky point",
         charm: "Today's charm"
+      },
+      seo: {
+        eyebrow: "Dog & Cat Guide",
+        title: "How to read your pet's vibe card more easily",
+        lead: "Dangnyang Saju is a playful dog and cat fortune-style card that turns birthdays, birth time, breed hints, and temperament keywords into a quick personality read. It helps you check natural tendencies, care cues, and chemistry with a favorite human in one place.",
+        chip1: "Dog saju",
+        chip2: "Cat saju",
+        chip3: "Pet personality",
+        chip4: "Human chemistry",
+        howEyebrow: "Input guide",
+        howTitle: "A few details make the card feel sharper",
+        howBody: "Birthday and birth time shape the rhythm, breed hints add a baseline temperament, and temperament keywords bring in your real-life observations. Mixed breeds are fine too, so choosing the closest vibe is enough.",
+        whatEyebrow: "What you get",
+        whatTitle: "You can scan the result in seconds",
+        whatBody: "The card wraps up a type name, mood rhythm, natural temperament, human chemistry, care notes, and one lucky charm line, so it works well both as a keepsake and a shareable summary.",
+        faqEyebrow: "FAQ",
+        faqTitle: "Dog and cat saju FAQ",
+        faq1Q: "Is this a formal traditional saju reading for dogs and cats?",
+        faq1A: "It is a light, playful interpretation rather than a formal fortune service. The card blends date and time patterns, breed notes, and temperament keywords to make the result feel cute, coherent, and shareable.",
+        faq2Q: "What if I do not know the exact birth time?",
+        faq2A: "You can leave it blank. The reading still works from birthday, breed, and temperament keywords, and the overall tone stays stable even without an exact time.",
+        faq3Q: "Can I use it for both dogs and cats?",
+        faq3A: "Yes. The site supports both dogs and cats, and the breed and copy pools shift so each result feels closer to a pet's actual vibe."
       }
     },
     ja: {
@@ -280,6 +326,29 @@
         care: "お世話のポイント",
         luck: "ラッキーポイント",
         charm: "今日のおまもり"
+      },
+      seo: {
+        eyebrow: "わんこ・にゃんこガイド",
+        title: "うちの子の気質カードをもっとわかりやすく読むコツ",
+        lead: "댕냥 사주 は、わんこ・にゃんこのサジュ風カードを気軽に楽しめるサイトです。誕生日、生まれた時間、品種、性格キーワードをもとに、気質、相性、お世話のヒントをひと目でわかる形にまとめます。",
+        chip1: "わんこのサジュ",
+        chip2: "にゃんこのサジュ",
+        chip3: "ペットの気質",
+        chip4: "保護者との相性",
+        howEyebrow: "入力のポイント",
+        howTitle: "この4つでカードがぐっと読みやすくなります",
+        howBody: "誕生日と生まれた時間は気分の流れを、品種は基本の性格を、性格キーワードは実際の暮らしの雰囲気を補ってくれます。ミックスでも、いちばん近い雰囲気を選べば十分です。",
+        whatEyebrow: "結果のポイント",
+        whatTitle: "こんな内容をすぐ確認できます",
+        whatBody: "サジュタイプ、気分リズム、生まれつきの性格、保護者との相性、お世話のポイント、今日のおまもりまでが一枚のカードにまとまるので、保存や共有にも向いています。",
+        faqEyebrow: "よくある質問",
+        faqTitle: "わんこ・にゃんこサジュ FAQ",
+        faq1Q: "わんこやにゃんこのサジュは、どんな基準で出ていますか？",
+        faq1A: "誕生日、生まれた時間、品種、性格キーワードをもとに結果を組み立てています。伝統的な占いをそのまま再現するというより、ペットの雰囲気や暮らしぶりをやさしく一貫したトーンで読むカードに近いです。",
+        faq2Q: "生まれた時間がわからないと大きく変わりますか？",
+        faq2A: "時間が空欄でも結果は見られます。誕生日、品種、性格キーワードだけでも、基本の気質や相性、お世話のヒントは十分自然にまとまります。",
+        faq3Q: "犬と猫の両方に使えますか？",
+        faq3A: "はい。犬と猫の両方に対応していて、品種の説明や文章のトーンもそれぞれ切り替わるので、同じサイトで気軽に見比べられます。"
       }
     }
   },

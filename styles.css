@@ -745,6 +745,90 @@ button {
   background: linear-gradient(160deg, rgba(255, 217, 128, 0.42), rgba(245, 180, 193, 0.36));
 }
 
+.seo-stack {
+  display: grid;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.seo-panel {
+  padding: 28px;
+}
+
+.seo-intro-panel {
+  background:
+    radial-gradient(circle at top right, rgba(255, 217, 128, 0.24), transparent 30%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.86), rgba(255, 246, 231, 0.92));
+}
+
+.seo-heading {
+  margin-bottom: 18px;
+}
+
+.seo-lead,
+.seo-card-body,
+.faq-item p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.seo-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.seo-chip-list span {
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(47, 38, 31, 0.08);
+  font-size: 0.94rem;
+}
+
+.seo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.seo-card {
+  background: linear-gradient(155deg, rgba(255, 217, 128, 0.2), rgba(255, 255, 255, 0.9));
+}
+
+.seo-card-soft {
+  background: linear-gradient(155deg, rgba(122, 211, 195, 0.16), rgba(164, 216, 255, 0.12));
+}
+
+.seo-card-title,
+.faq-item h3 {
+  margin: 0 0 12px;
+  font-family: "Jua", "M PLUS Rounded 1c", "Noto Sans JP", sans-serif;
+  line-height: 1.3;
+}
+
+.seo-card-title {
+  font-size: 1.45rem;
+}
+
+.faq-list {
+  display: grid;
+  gap: 14px;
+}
+
+.faq-item {
+  padding: 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(47, 38, 31, 0.08);
+}
+
+.faq-item h3 {
+  font-size: 1.16rem;
+}
+
 .block-label {
   margin: 0 0 10px;
   font-family: "Jua", sans-serif;
@@ -786,7 +870,8 @@ button {
 
 @media (max-width: 960px) {
   .hero,
-  .workspace {
+  .workspace,
+  .seo-grid {
     grid-template-columns: 1fr;
   }
 
@@ -832,6 +917,7 @@ button {
 
   .form-panel,
   .result-panel,
+  .seo-panel,
   .hero {
     border-radius: 24px;
   }
@@ -839,7 +925,8 @@ button {
   .field-grid,
   .type-strip,
   .result-grid,
-  .result-hero {
+  .result-hero,
+  .seo-grid {
     grid-template-columns: 1fr;
   }
 
