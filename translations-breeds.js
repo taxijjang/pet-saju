@@ -29,6 +29,14 @@
       "ragdoll": { label: "Ragdoll", vibe: "gentle emotional warmth", preview: "Relaxed closeness and a deep sense of comfort are easy to read in this type.", groupKey: "catBreed" },
       "bengal": { label: "Bengal", vibe: "wild sparkle and motion", preview: "Curiosity and movement turn on fast, and the whole mood brightens with stimulation.", groupKey: "catBreed" },
       "scottish-fold": { label: "Scottish Fold", vibe: "soft mellow sweetness", preview: "Quiet tenderness and a calm sense of togetherness show up especially sweetly here.", groupKey: "catBreed" },
+      "british-shorthair": { label: "British Shorthair", vibe: "round calm presence", preview: "A plush, grounded mood often settles in first, making the whole room feel softer.", groupKey: "catBreed" },
+      "munchkin": { label: "Munchkin", vibe: "bouncy playful charm", preview: "Quick little movements and cheerful curiosity make this one feel extra lively.", groupKey: "catBreed" },
+      "norwegian-forest": { label: "Norwegian Forest Cat", vibe: "woodland calm and breadth", preview: "There is a roomy, quietly observant charm that comes alive in layered spaces.", groupKey: "catBreed" },
+      "maine-coon": { label: "Maine Coon", vibe: "big gentle ease", preview: "Large in presence but mellow in mood, this type often feels like a warm steady companion.", groupKey: "catBreed" },
+      "siamese": { label: "Siamese", vibe: "clear expression and presence", preview: "Fast reactions and visible feelings make the bond feel bright and immediate.", groupKey: "catBreed" },
+      "turkish-angora": { label: "Turkish Angora", vibe: "light elegant sparkle", preview: "A clean, airy elegance shows up easily, especially when the space feels calm and bright.", groupKey: "catBreed" },
+      "abyssinian": { label: "Abyssinian", vibe: "quick curious energy", preview: "Movement, play, and discovery tend to wake this type up beautifully.", groupKey: "catBreed" },
+      "exotic-shorthair": { label: "Exotic Shorthair", vibe: "plush unhurried sweetness", preview: "A slow, cozy rhythm and soft expressions make this one feel especially cuddly.", groupKey: "catBreed" },
       "mixed-cat": { label: "Mixed cat", vibe: "layered one-of-a-kind charm", preview: "This pet often feels impossible to flatten into one type, and that layered charm is the point.", groupKey: "mixed" }
     },
     ja: {
@@ -60,6 +68,14 @@
       "ragdoll": { label: "ラグドール", vibe: "おだやかな情の深さ", preview: "安心した近さと、深いくつろぎ感がそのまま魅力になりやすいです。", groupKey: "catBreed" },
       "bengal": { label: "ベンガル", vibe: "動きのある野性味", preview: "刺激が入るほど目が輝きやすく、活発な魅力が前に出やすいです。", groupKey: "catBreed" },
       "scottish-fold": { label: "スコティッシュフォールド", vibe: "やわらかな穏やかさ", preview: "静かな甘さと、一緒にいるだけで和らぐ空気が魅力です。", groupKey: "catBreed" },
+      "british-shorthair": { label: "ブリティッシュショートヘア", vibe: "まるく落ち着いた存在感", preview: "ふっくらした安定感が先に伝わり、部屋の空気をやさしく整えやすいです。", groupKey: "catBreed" },
+      "munchkin": { label: "マンチカン", vibe: "はずむようなおちゃめさ", preview: "ちいさな動きと軽やかな好奇心が、そのまま愛らしさとして出やすいです。", groupKey: "catBreed" },
+      "norwegian-forest": { label: "ノルウェージャンフォレストキャット", vibe: "森のようなゆとり", preview: "広がりのある空間で、静かな観察力と落ち着いた魅力がよく映えます。", groupKey: "catBreed" },
+      "maine-coon": { label: "メインクーン", vibe: "大きくやさしい余裕", preview: "存在感はしっかりでも空気はおだやかで、安心感のある相棒感が出やすいです。", groupKey: "catBreed" },
+      "siamese": { label: "シャム", vibe: "表現力のはっきりした魅力", preview: "反応の速さと気持ちの見えやすさで、関係の温度が伝わりやすいタイプです。", groupKey: "catBreed" },
+      "turkish-angora": { label: "ターキッシュアンゴラ", vibe: "軽やかで上品なきらめき", preview: "明るく静かな空間の中で、すっきりした優雅さがいっそう引き立ちます。", groupKey: "catBreed" },
+      "abyssinian": { label: "アビシニアン", vibe: "すばやい好奇心と活気", preview: "動きや遊び、発見の中で魅力がぐっと立ち上がりやすいタイプです。", groupKey: "catBreed" },
+      "exotic-shorthair": { label: "エキゾチックショートヘア", vibe: "ふわっとのんびりした甘さ", preview: "ゆっくりしたテンポとやわらかな表情が、そのまま可愛さとして出やすいです。", groupKey: "catBreed" },
       "mixed-cat": { label: "ミックス猫", vibe: "重なり合う個性の魅力", preview: "ひとつの型にしぼれない、多層的な魅力そのものが個性として出やすいです。", groupKey: "mixed" }
     }
   },
