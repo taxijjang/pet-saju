@@ -27,8 +27,12 @@
         tags: ["강아지", "고양이", "기질 해석", "집사 궁합"]
       },
       note: {
-        label: "이런 방식으로 보여드려요",
+        label: "입력하면 이런 카드가 나와요",
         items: ["타고난 핵심 기운 2가지", "아이의 기본 성향과 감정 리듬", "행운 간식, 산책 포인트, 낮잠 스팟"],
+        previewChip: "결과 미리보기",
+        pointType: "사주 타입",
+        pointChemistry: "집사 케미",
+        pointMoment: "오늘 포인트",
         caption: "입력한 정보는 저장되지 않고 브라우저 안에서만 계산됩니다."
       },
       form: {
@@ -57,6 +61,7 @@
         statusIdle: "이름과 생일을 입력하면 버튼이 활성화돼요.",
         statusReady: "필수 입력이 채워졌어요. 품종과 키워드를 더하면 결과가 더 디테일해져요.",
         submit: "사주 카드 보기",
+        submitNamed: (name) => `${name} 사주 카드 보기`,
         keywordCount: (count, limit) => `${count} / ${limit} 선택`
       },
       result: {
@@ -142,8 +147,12 @@
         tags: ["Dogs", "Cats", "Vibe reading", "Human chemistry"]
       },
       note: {
-        label: "What you'll get",
+        label: "This is the kind of card you'll get",
         items: ["Two core energies that feel strongest", "A quick read on mood rhythm and natural traits", "Lucky snacks, walk spots, and nap corners"],
+        previewChip: "Preview",
+        pointType: "Type",
+        pointChemistry: "Chemistry",
+        pointMoment: "Today's point",
         caption: "Nothing is stored. Everything is calculated right in your browser."
       },
       form: {
@@ -172,6 +181,7 @@
         statusIdle: "The button lights up once the name and birthday are filled in.",
         statusReady: "The must-have fields are filled. Adding breed and keywords makes the reading feel more detailed.",
         submit: "Show my card",
+        submitNamed: (name) => `Show ${name}'s card`,
         keywordCount: (count, limit) => `${count} / ${limit} selected`
       },
       result: {
@@ -257,8 +267,12 @@
         tags: ["わんこ", "にゃんこ", "気質リーディング", "相性"]
       },
       note: {
-        label: "こんな内容が出ます",
+        label: "入力するとこんなカードになります",
         items: ["強く出ているコアな気 2つ", "基本の性格と気分リズム", "ラッキーおやつ・お散歩スポット・お昼寝ポイント"],
+        previewChip: "プレビュー",
+        pointType: "サジュタイプ",
+        pointChemistry: "相性",
+        pointMoment: "今日のポイント",
         caption: "入力した情報は保存されず、ブラウザの中だけで計算されます。"
       },
       form: {
@@ -287,6 +301,7 @@
         statusIdle: "名前と誕生日を入れるとボタンが有効になります。",
         statusReady: "必須項目は入力済みです。品種やキーワードを足すと、読み取りがもっと細かくなります。",
         submit: "カードを見る",
+        submitNamed: (name) => `${name} のカードを見る`,
         keywordCount: (count, limit) => `${count} / ${limit} 個選択`
       },
       result: {

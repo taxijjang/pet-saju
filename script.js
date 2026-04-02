@@ -23,6 +23,13 @@ const breedSelect = document.querySelector("#breed-select");
 const breedHint = document.querySelector("#breed-hint");
 const breedNamePreview = document.querySelector("#breed-name-preview");
 const breedCopy = document.querySelector("#breed-copy");
+const heroTeaserChip = document.querySelector("#hero-teaser-chip");
+const heroTeaserKicker = document.querySelector("#hero-teaser-kicker");
+const heroTeaserTitle = document.querySelector("#hero-teaser-title");
+const heroTeaserCopy = document.querySelector("#hero-teaser-copy");
+const heroTeaserPointType = document.querySelector("#hero-teaser-point-type");
+const heroTeaserPointChemistry = document.querySelector("#hero-teaser-point-chemistry");
+const heroTeaserPointMoment = document.querySelector("#hero-teaser-point-moment");
 const petNameInput = document.querySelector("#pet-name");
 const guardianNameInput = document.querySelector("#guardian-name");
 const birthDateInput = document.querySelector("#birth-date");
@@ -69,6 +76,8 @@ const breedGroupKeys = {
   "대표 묘종": "catBreed",
   "믹스/기타": "mixed"
 };
+
+const teaserKeywordFallback = ["애교만점", "장난꾸러기", "산책러버"];
 
 const breedCatalog = {
   dog: [
@@ -1025,6 +1034,7 @@ function setSelectedKeywords(keywords) {
     }
   });
   updateKeywordCount();
+  renderHeroTeaser();
 }
 
 function flashButtonLabel(button, nextLabel) {
@@ -1125,6 +1135,76 @@ function getFormValues() {
   return values;
 }
 
+function summarizePreviewText(text, limit = 72) {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  if (normalized.length <= limit) {
+    return normalized;
+  }
+
+  const sliced = normalized.slice(0, limit - 1);
+  const cut = sliced.lastIndexOf(" ");
+  const preview = cut > limit * 0.55 ? sliced.slice(0, cut) : sliced;
+  return `${preview.trim()}...`;
+}
+
+function extractLeadLine(text) {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  const firstSentence = normalized.split(/(?<=[.!?。！？])/u)[0];
+  return firstSentence || normalized;
+}
+
+function getSubmitButtonLabel() {
+  const copy = getCopy();
+  const petName = petNameInput.value.trim();
+
+  if (petName && birthDateInput.value && typeof copy.form.submitNamed === "function") {
+    return copy.form.submitNamed(petName);
+  }
+
+  return copy.form.submit;
+}
+
+function getHeroTeaserValues() {
+  const sample = i18n.samples[currentLanguage] || i18n.samples.ko;
+  const petType = petTypeInput.value || "dog";
+  const fallbackBreed = breedCatalog[petType][0]?.value || "welsh-corgi";
+
+  return {
+    petType,
+    petName: petNameInput.value.trim() || sample.petName,
+    guardianName: guardianNameInput.value.trim() || sample.guardianName,
+    breed: breedSelect.value || fallbackBreed,
+    birthDate: birthDateInput.value || "2021-04-18",
+    birthTime: normalizeBirthTimeValue(birthTimeInput.value || "08:10"),
+    keywords: selectedKeywords.size ? [...selectedKeywords] : teaserKeywordFallback
+  };
+}
+
+function renderHeroTeaser() {
+  if (
+    !heroTeaserChip ||
+    !heroTeaserKicker ||
+    !heroTeaserTitle ||
+    !heroTeaserCopy ||
+    !heroTeaserPointType ||
+    !heroTeaserPointChemistry ||
+    !heroTeaserPointMoment
+  ) {
+    return;
+  }
+
+  const values = getHeroTeaserValues();
+  const reading = buildReading(values, currentLanguage, { keywords: values.keywords });
+
+  heroTeaserChip.textContent = getCopy().note.previewChip;
+  heroTeaserKicker.textContent = `${reading.petName} · ${reading.breed.label}`;
+  heroTeaserTitle.textContent = reading.archetype;
+  heroTeaserCopy.textContent = summarizePreviewText(reading.summary, currentLanguage === "en" ? 132 : 96);
+  heroTeaserPointType.textContent = summarizePreviewText(`${reading.primaryLabel} · ${reading.secondaryLabel}`, 28);
+  heroTeaserPointChemistry.textContent = summarizePreviewText(extractLeadLine(reading.chemistry), currentLanguage === "en" ? 48 : 28);
+  heroTeaserPointMoment.textContent = summarizePreviewText(extractLeadLine(reading.charm), currentLanguage === "en" ? 40 : 24);
+}
+
 function collectState(values) {
   return {
     language: currentLanguage,
@@ -1193,9 +1273,12 @@ function renderSnapshotTags(items) {
 function updateFormState() {
   const hasRequiredFields = petNameInput.value.trim() && birthDateInput.value;
   submitButton.disabled = !hasRequiredFields;
+  submitButton.classList.toggle("ready", Boolean(hasRequiredFields));
+  submitButton.textContent = getSubmitButtonLabel();
   formStatus.textContent = hasRequiredFields
     ? getCopy().form.statusReady
     : getCopy().form.statusIdle;
+  renderHeroTeaser();
 }
 
 function getTimeProfile(time) {
@@ -1227,6 +1310,7 @@ petOptions.forEach((button) => {
 
 breedSelect.addEventListener("change", () => {
   renderBreedPreview(petTypeInput.value, breedSelect.value);
+  renderHeroTeaser();
 });
 
 [petNameInput, birthDateInput].forEach((input) => {
@@ -1236,14 +1320,17 @@ breedSelect.addEventListener("change", () => {
 
 birthTimeInput.addEventListener("input", () => {
   syncBirthTimeInput();
+  renderHeroTeaser();
 });
 
 birthTimeInput.addEventListener("blur", () => {
   syncBirthTimeInput({ finalize: true });
+  renderHeroTeaser();
 });
 
 birthTimeInput.addEventListener("change", () => {
   syncBirthTimeInput({ finalize: true });
+  renderHeroTeaser();
 });
 
 keywordButtons.forEach((button) => {
@@ -1253,17 +1340,20 @@ keywordButtons.forEach((button) => {
       selectedKeywords.delete(keyword);
       button.classList.remove("selected");
       updateKeywordCount();
+      renderHeroTeaser();
       return;
     }
 
     if (selectedKeywords.size >= keywordLimit) {
       updateKeywordCount();
+      renderHeroTeaser();
       return;
     }
 
     selectedKeywords.add(keyword);
     button.classList.add("selected");
     updateKeywordCount();
+    renderHeroTeaser();
   });
 });
 
@@ -1815,16 +1905,17 @@ function renderBadges(items) {
   });
 }
 
-function buildReading(values, language = currentLanguage) {
-  const petType = values.petType;
-  const petName = values.petName.trim();
+function buildReading(values, language = currentLanguage, overrides = {}) {
+  const petType = overrides.petType || values.petType;
+  const petName = (overrides.petName ?? values.petName ?? "").trim();
   const copy = getCopy(language);
-  const guardianName = values.guardianName.trim() || copy.fallbackGuardian;
-  const birthDate = values.birthDate;
-  const birthTime = values.birthTime || "";
-  const keywords = [...selectedKeywords];
-  const baseBreed = getBreedProfile(petType, values.breed);
-  const breed = getBreedProfileLocalized(petType, values.breed, language);
+  const guardianName = (overrides.guardianName ?? values.guardianName ?? "").trim() || copy.fallbackGuardian;
+  const birthDate = overrides.birthDate ?? values.birthDate;
+  const birthTime = (overrides.birthTime ?? values.birthTime) || "";
+  const keywords = [...(overrides.keywords || selectedKeywords)];
+  const breedValue = overrides.breed ?? values.breed;
+  const baseBreed = getBreedProfile(petType, breedValue);
+  const breed = getBreedProfileLocalized(petType, breedValue, language);
   const seedText = [petType, baseBreed.value, petName, guardianName, birthDate, birthTime, keywords.sort().join("|")].join("|");
   const random = mulberry32(xmur3(seedText)());
   const scores = buildElementScores(seedText, birthDate, birthTime || "00:00").sort((a, b) => b.score - a.score);

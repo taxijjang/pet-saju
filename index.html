@@ -146,12 +146,29 @@
 
           <div class="hero-note">
             <div class="note-card">
-              <p class="note-label" data-i18n="note.label">이런 방식으로 보여드려요</p>
-              <ul>
-                <li data-i18n="note.item1">타고난 핵심 기운 2가지</li>
-                <li data-i18n="note.item2">아이의 기본 성향과 감정 리듬</li>
-                <li data-i18n="note.item3">행운 간식, 산책 포인트, 낮잠 스팟</li>
-              </ul>
+              <p class="note-label" id="hero-teaser-label" data-i18n="note.label">입력하면 이런 카드가 나와요</p>
+              <div class="hero-teaser-card">
+                <div class="hero-teaser-head">
+                  <span class="hero-teaser-chip" id="hero-teaser-chip" data-i18n="note.previewChip">결과 미리보기</span>
+                  <p class="hero-teaser-kicker" id="hero-teaser-kicker"></p>
+                </div>
+                <h3 class="hero-teaser-title" id="hero-teaser-title"></h3>
+                <p class="hero-teaser-copy" id="hero-teaser-copy"></p>
+                <div class="hero-teaser-points">
+                  <article class="hero-teaser-point">
+                    <p class="hero-teaser-point-label" data-i18n="note.pointType">사주 타입</p>
+                    <strong class="hero-teaser-point-value" id="hero-teaser-point-type"></strong>
+                  </article>
+                  <article class="hero-teaser-point">
+                    <p class="hero-teaser-point-label" data-i18n="note.pointChemistry">집사 케미</p>
+                    <strong class="hero-teaser-point-value" id="hero-teaser-point-chemistry"></strong>
+                  </article>
+                  <article class="hero-teaser-point">
+                    <p class="hero-teaser-point-label" data-i18n="note.pointMoment">오늘 포인트</p>
+                    <strong class="hero-teaser-point-value" id="hero-teaser-point-moment"></strong>
+                  </article>
+                </div>
+              </div>
             </div>
             <p class="mini-caption" data-i18n="note.caption">
               입력한 정보는 저장되지 않고 브라우저 안에서만 계산됩니다.
