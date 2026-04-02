@@ -30,9 +30,16 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link
-      href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
       rel="stylesheet"
+    >
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
     >
     <script type="application/ld+json">
       {
@@ -111,7 +118,11 @@
                 </div>
               </div>
             </div>
-            <h1>
+            <div class="hero-pretext-stage" aria-hidden="true">
+              <canvas class="hero-pretext-canvas"></canvas>
+              <div class="hero-pretext-orb"></div>
+            </div>
+            <h1 class="hero-heading-fallback">
               <span class="hero-line">
                 <span class="hero-base" data-i18n="hero.line1Base">우리 집 </span><span class="hero-highlight" data-i18n="hero.line1Highlight">강아지와</span>
               </span>
@@ -419,5 +430,6 @@
     <script src="./translations-breeds.js"></script>
     <script src="./translations-elements.js"></script>
     <script src="./script.js"></script>
+    <script type="module" src="./hero-pretext.js"></script>
   </body>
 </html>
