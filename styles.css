@@ -336,6 +336,8 @@ button {
   display: none;
   position: relative;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   overflow: hidden;
 }
 
@@ -347,6 +349,7 @@ button {
   display: block;
   width: 100%;
   height: 100%;
+  max-width: 100%;
 }
 
 .pretext-orb {
@@ -965,6 +968,7 @@ button {
 }
 
 .type-card {
+  min-width: 0;
   padding: 20px;
   border-radius: 22px;
   background: linear-gradient(155deg, rgba(255, 217, 128, 0.24), rgba(255, 140, 107, 0.2));
@@ -994,6 +998,7 @@ button {
 }
 
 .result-block {
+  min-width: 0;
   padding: 20px;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.74);

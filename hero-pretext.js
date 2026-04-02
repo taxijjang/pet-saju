@@ -368,6 +368,30 @@ function mountSecondaryPretext(target, options) {
     return target.textContent.replace(/\s+/g, " ").trim();
   }
 
+  function getAvailableWidth() {
+    const shellWidth = Math.floor(shell.getBoundingClientRect().width);
+    if (shellWidth > 0) {
+      return shellWidth;
+    }
+
+    const targetWidth = Math.floor(target.getBoundingClientRect().width);
+    if (targetWidth > 0) {
+      return targetWidth;
+    }
+
+    const parentRectWidth = target.parentElement ? target.parentElement.getBoundingClientRect().width : 0;
+    const parentStyles = target.parentElement ? getComputedStyle(target.parentElement) : null;
+    const paddingLeft = parentStyles ? Number.parseFloat(parentStyles.paddingLeft) || 0 : 0;
+    const paddingRight = parentStyles ? Number.parseFloat(parentStyles.paddingRight) || 0 : 0;
+    const parentContentWidth = Math.floor(parentRectWidth - paddingLeft - paddingRight);
+
+    if (parentContentWidth > 0) {
+      return parentContentWidth;
+    }
+
+    return options.minWidth;
+  }
+
   function buildLayout(width) {
     const text = getText();
     const styles = getComputedStyle(target);
@@ -464,9 +488,7 @@ function mountSecondaryPretext(target, options) {
 
     shell.hidden = false;
     shell.classList.add("pretext-active");
-    target.classList.add("pretext-fallback-hidden");
-
-    const width = Math.max(options.minWidth, Math.floor(target.parentElement.clientWidth));
+    const width = getAvailableWidth();
     const layout = buildLayout(width);
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
@@ -475,6 +497,7 @@ function mountSecondaryPretext(target, options) {
     canvas.height = Math.round(layout.stageHeight * dpr);
     canvas.style.width = `${width}px`;
     canvas.style.height = `${layout.stageHeight}px`;
+    target.classList.add("pretext-fallback-hidden");
 
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, width, layout.stageHeight);
