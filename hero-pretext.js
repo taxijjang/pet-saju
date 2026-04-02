@@ -15,10 +15,10 @@ if (!heroCopy || !heroHeading || !heroStage || !heroCanvas || !heroOrb || !heroC
   const mobileQuery = window.matchMedia("(max-width: 680px)");
   const preparedCache = new Map();
   const state = {
-    currentX: 0.76,
-    currentY: 0.36,
-    targetX: 0.76,
-    targetY: 0.36,
+    currentX: 0.83,
+    currentY: 0.34,
+    targetX: 0.83,
+    targetY: 0.34,
     animationFrame: 0
   };
 
@@ -76,10 +76,10 @@ if (!heroCopy || !heroHeading || !heroStage || !heroCanvas || !heroOrb || !heroC
     const bottomPad = mobileQuery.matches ? 18 : 22;
     const lineHeight = Math.round(fontSize * (mobileQuery.matches ? 1.05 : 1.06));
     const orbRadius = mobileQuery.matches
-      ? clamp(width * 0.11, 44, 58)
-      : clamp(width * 0.11, 58, 78);
-    const orbX = clamp(width * state.currentX, width * 0.58, width * 0.84);
-    const orbY = clamp(height * state.currentY, height * 0.22, height * 0.72);
+      ? clamp(width * 0.098, 40, 54)
+      : clamp(width * 0.098, 50, 72);
+    const orbX = clamp(width * state.currentX, width * 0.64, width * 0.88);
+    const orbY = clamp(height * state.currentY, height * 0.2, height * 0.68);
     const fullWidth = width - leftPad - rightPad;
     const lines = [];
     let cursor = { segmentIndex: 0, graphemeIndex: 0 };
@@ -240,8 +240,8 @@ if (!heroCopy || !heroHeading || !heroStage || !heroCanvas || !heroOrb || !heroC
   }
 
   function resetTargets() {
-    state.targetX = 0.76;
-    state.targetY = 0.36;
+    state.targetX = 0.83;
+    state.targetY = 0.34;
     kickAnimation();
   }
 
@@ -251,8 +251,8 @@ if (!heroCopy || !heroHeading || !heroStage || !heroCanvas || !heroOrb || !heroC
     }
 
     const bounds = heroStage.getBoundingClientRect();
-    state.targetX = clamp((event.clientX - bounds.left) / bounds.width, 0.58, 0.84);
-    state.targetY = clamp((event.clientY - bounds.top) / bounds.height, 0.22, 0.72);
+    state.targetX = clamp((event.clientX - bounds.left) / bounds.width, 0.64, 0.88);
+    state.targetY = clamp((event.clientY - bounds.top) / bounds.height, 0.2, 0.68);
     kickAnimation();
   }
 
@@ -300,3 +300,322 @@ if (!heroCopy || !heroHeading || !heroStage || !heroCanvas || !heroOrb || !heroC
     mount();
   }
 }
+
+const secondaryMobileQuery = window.matchMedia("(max-width: 680px)");
+const secondaryPreparedCache = new Map();
+
+function clampValue(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getPreparedText(text, fontString) {
+  const locale = document.documentElement.lang || "ko";
+  const cacheKey = `${locale}::${fontString}::${text}`;
+  const cached = secondaryPreparedCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  setLocale(locale);
+  const prepared = prepareWithSegments(text, fontString);
+  secondaryPreparedCache.set(cacheKey, prepared);
+  return prepared;
+}
+
+function mountSecondaryPretext(target, options) {
+  if (!target || !target.parentElement) {
+    return;
+  }
+
+  const shell = document.createElement("div");
+  shell.className = `pretext-shell ${options.shellClass}`.trim();
+
+  const canvas = document.createElement("canvas");
+  canvas.className = "pretext-canvas";
+  shell.append(canvas);
+
+  let orb = null;
+  if (options.orb) {
+    orb = document.createElement("div");
+    orb.className = "pretext-orb";
+    shell.append(orb);
+  }
+
+  target.before(shell);
+  const context = canvas.getContext("2d");
+  if (!context) {
+    shell.remove();
+    return;
+  }
+
+  function getText() {
+    return target.textContent.replace(/\s+/g, " ").trim();
+  }
+
+  function buildLayout(width) {
+    const text = getText();
+    const styles = getComputedStyle(target);
+    const fontFamily = styles.fontFamily;
+    const fontWeight = Number.parseInt(styles.fontWeight, 10) || 700;
+    let fontSize = secondaryMobileQuery.matches
+      ? clampValue(width * options.mobileFontScale, options.mobileMinFont, options.mobileMaxFont)
+      : clampValue(width * options.desktopFontScale, options.desktopMinFont, options.desktopMaxFont);
+    let stageHeight = options.minHeight(width);
+    let bestLayout = null;
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const fontString = `${fontWeight} ${fontSize}px ${fontFamily}`;
+      const prepared = getPreparedText(text, fontString);
+      const paddingX = secondaryMobileQuery.matches ? options.mobilePaddingX : options.desktopPaddingX;
+      const topPad = secondaryMobileQuery.matches ? options.mobilePaddingTop : options.desktopPaddingTop;
+      const bottomPad = secondaryMobileQuery.matches ? options.mobilePaddingBottom : options.desktopPaddingBottom;
+      const lineHeight = Math.round(fontSize * options.lineHeight);
+      const fullWidth = width - paddingX * 2;
+      const orbRadius = options.orb
+        ? (secondaryMobileQuery.matches ? options.mobileOrbRadius(width) : options.desktopOrbRadius(width))
+        : 0;
+      const orbX = width * options.orbX;
+      const orbY = stageHeight * options.orbY;
+      const lines = [];
+      let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+      let baselineY = topPad + fontSize;
+      let complete = false;
+
+      while (baselineY <= stageHeight - bottomPad + 4) {
+        const lineCenterY = baselineY - fontSize * 0.42;
+        let maxWidth = fullWidth;
+
+        if (options.orb && lineCenterY >= orbY - orbRadius - fontSize * 0.2 && lineCenterY <= orbY + orbRadius + fontSize * 0.1) {
+          const cutoff = orbX - orbRadius - paddingX - 14;
+          maxWidth = Math.min(fullWidth, Math.max(width * options.minWidthRatio, cutoff));
+        }
+
+        const line = layoutNextLine(prepared, cursor, maxWidth);
+        if (line === null) {
+          complete = true;
+          break;
+        }
+
+        lines.push({
+          text: line.text.trimEnd(),
+          y: baselineY,
+          maxWidth
+        });
+        cursor = line.end;
+        baselineY += lineHeight;
+      }
+
+      const neededHeight = topPad + lines.length * lineHeight + bottomPad;
+      bestLayout = {
+        text,
+        fontString,
+        fontSize,
+        lines,
+        stageHeight,
+        paddingX,
+        topPad,
+        lineHeight,
+        orbRadius,
+        orbX,
+        orbY,
+        fullWidth,
+        complete
+      };
+
+      if (complete && neededHeight <= stageHeight + 4) {
+        break;
+      }
+
+      const expandedHeight = clampValue(neededHeight + 14, options.minHeight(width), options.maxHeight(width));
+      if (expandedHeight > stageHeight + 2) {
+        stageHeight = expandedHeight;
+      } else {
+        fontSize = Math.max(options.mobileMinFont, fontSize * 0.92);
+      }
+    }
+
+    return bestLayout;
+  }
+
+  function render() {
+    const text = getText();
+    if (!text) {
+      shell.hidden = true;
+      shell.classList.remove("pretext-active");
+      target.classList.remove("pretext-fallback-hidden");
+      return;
+    }
+
+    shell.hidden = false;
+    shell.classList.add("pretext-active");
+    target.classList.add("pretext-fallback-hidden");
+
+    const width = Math.max(options.minWidth, Math.floor(target.parentElement.clientWidth));
+    const layout = buildLayout(width);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    shell.style.height = `${layout.stageHeight}px`;
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(layout.stageHeight * dpr);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${layout.stageHeight}px`;
+
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    context.clearRect(0, 0, width, layout.stageHeight);
+    context.textBaseline = "alphabetic";
+    context.font = layout.fontString;
+
+    if (orb) {
+      const size = layout.orbRadius * 2;
+      orb.style.width = `${size}px`;
+      orb.style.height = `${size}px`;
+      orb.style.transform = `translate(${layout.orbX - layout.orbRadius}px, ${layout.orbY - layout.orbRadius}px)`;
+    }
+
+    layout.lines.forEach((line, index) => {
+      const x = layout.paddingX + (index % 2 === 1 ? options.lineNudge : 0);
+      const gradient = context.createLinearGradient(x, 0, x + line.maxWidth, 0);
+      gradient.addColorStop(0, options.startColor);
+      gradient.addColorStop(options.midStop, options.midColor);
+      gradient.addColorStop(1, options.endColor);
+
+      context.save();
+      context.fillStyle = options.shadowColor;
+      context.fillText(line.text, x + 1.5, line.y + 1.5);
+      context.fillStyle = gradient;
+      context.fillText(line.text, x, line.y);
+      context.restore();
+    });
+  }
+
+  const mutationObserver = new MutationObserver(() => {
+    secondaryPreparedCache.clear();
+    render();
+  });
+  mutationObserver.observe(target, {
+    subtree: true,
+    childList: true,
+    characterData: true
+  });
+
+  const langObserver = new MutationObserver(() => {
+    secondaryPreparedCache.clear();
+    render();
+  });
+  langObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["lang"]
+  });
+
+  const resizeObserver = new ResizeObserver(() => {
+    render();
+  });
+  resizeObserver.observe(target.parentElement);
+
+  secondaryMobileQuery.addEventListener("change", () => {
+    secondaryPreparedCache.clear();
+    render();
+  });
+
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(render);
+  } else {
+    render();
+  }
+}
+
+mountSecondaryPretext(document.querySelector("#result-title"), {
+  shellClass: "result-pretext-shell",
+  orb: true,
+  minWidth: 240,
+  desktopFontScale: 0.06,
+  mobileFontScale: 0.08,
+  desktopMinFont: 28,
+  desktopMaxFont: 42,
+  mobileMinFont: 24,
+  mobileMaxFont: 34,
+  desktopPaddingX: 18,
+  mobilePaddingX: 16,
+  desktopPaddingTop: 16,
+  mobilePaddingTop: 14,
+  desktopPaddingBottom: 16,
+  mobilePaddingBottom: 14,
+  desktopOrbRadius: (width) => clampValue(width * 0.1, 28, 42),
+  mobileOrbRadius: (width) => clampValue(width * 0.1, 22, 34),
+  orbX: 0.83,
+  orbY: 0.34,
+  minWidthRatio: 0.54,
+  lineHeight: 1.08,
+  lineNudge: 3,
+  startColor: "#2f261f",
+  midColor: "#2f261f",
+  endColor: "#ff6b45",
+  midStop: 0.72,
+  shadowColor: "rgba(255, 140, 107, 0.12)",
+  minHeight: (width) => (secondaryMobileQuery.matches ? clampValue(width * 0.28, 72, 108) : clampValue(width * 0.18, 82, 132)),
+  maxHeight: (width) => (secondaryMobileQuery.matches ? clampValue(width * 0.56, 140, 196) : clampValue(width * 0.34, 140, 220))
+});
+
+mountSecondaryPretext(document.querySelector("#type-name"), {
+  shellClass: "mini-pretext-shell",
+  orb: false,
+  minWidth: 160,
+  desktopFontScale: 0.088,
+  mobileFontScale: 0.1,
+  desktopMinFont: 24,
+  desktopMaxFont: 34,
+  mobileMinFont: 22,
+  mobileMaxFont: 30,
+  desktopPaddingX: 12,
+  mobilePaddingX: 12,
+  desktopPaddingTop: 10,
+  mobilePaddingTop: 10,
+  desktopPaddingBottom: 10,
+  mobilePaddingBottom: 10,
+  desktopOrbRadius: () => 0,
+  mobileOrbRadius: () => 0,
+  orbX: 0,
+  orbY: 0,
+  minWidthRatio: 1,
+  lineHeight: 1.04,
+  lineNudge: 2,
+  startColor: "#2f261f",
+  midColor: "#2f261f",
+  endColor: "#ff7a55",
+  midStop: 0.82,
+  shadowColor: "rgba(255, 217, 128, 0.16)",
+  minHeight: (width) => (secondaryMobileQuery.matches ? clampValue(width * 0.18, 48, 84) : clampValue(width * 0.15, 52, 90)),
+  maxHeight: (width) => (secondaryMobileQuery.matches ? clampValue(width * 0.3, 74, 118) : clampValue(width * 0.28, 80, 126))
+});
+
+mountSecondaryPretext(document.querySelector("#rhythm-title"), {
+  shellClass: "mini-pretext-shell soft",
+  orb: false,
+  minWidth: 160,
+  desktopFontScale: 0.08,
+  mobileFontScale: 0.1,
+  desktopMinFont: 22,
+  desktopMaxFont: 32,
+  mobileMinFont: 20,
+  mobileMaxFont: 28,
+  desktopPaddingX: 12,
+  mobilePaddingX: 12,
+  desktopPaddingTop: 10,
+  mobilePaddingTop: 10,
+  desktopPaddingBottom: 10,
+  mobilePaddingBottom: 10,
+  desktopOrbRadius: () => 0,
+  mobileOrbRadius: () => 0,
+  orbX: 0,
+  orbY: 0,
+  minWidthRatio: 1,
+  lineHeight: 1.04,
+  lineNudge: 2,
+  startColor: "#2f261f",
+  midColor: "#2f261f",
+  endColor: "#48bba6",
+  midStop: 0.84,
+  shadowColor: "rgba(122, 211, 195, 0.14)",
+  minHeight: (width) => (secondaryMobileQuery.matches ? clampValue(width * 0.18, 48, 84) : clampValue(width * 0.15, 52, 90)),
+  maxHeight: (width) => (secondaryMobileQuery.matches ? clampValue(width * 0.3, 74, 118) : clampValue(width * 0.28, 80, 126))
+});
