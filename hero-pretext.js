@@ -661,9 +661,7 @@ mountSecondaryPretext(document.querySelector("#rhythm-title"), {
 
 const sectionHeadingTargets = [
   { selector: "#form-section-title", endColor: "#ff7a55", shadowColor: "rgba(255, 217, 128, 0.18)" },
-  { selector: "#result-section-title", endColor: "#48bba6", shadowColor: "rgba(122, 211, 195, 0.16)" },
-  { selector: "#seo-section-title", endColor: "#ff7a55", shadowColor: "rgba(255, 217, 128, 0.18)" },
-  { selector: "#faq-section-title", endColor: "#48bba6", shadowColor: "rgba(122, 211, 195, 0.16)" }
+  { selector: "#result-section-title", endColor: "#48bba6", shadowColor: "rgba(122, 211, 195, 0.16)" }
 ];
 
 sectionHeadingTargets.forEach(({ selector, endColor, shadowColor }) => {

@@ -5,6 +5,7 @@ const keywordButtons = document.querySelectorAll(".keyword-chip");
 const languageButtons = document.querySelectorAll(".lang-button");
 const sampleButton = document.querySelector("#sample-button");
 const resultActions = document.querySelector("#result-actions");
+const seoAccordion = document.querySelector("#seo-accordion");
 const copyButton = document.querySelector("#copy-button");
 const shareButton = document.querySelector("#share-button");
 const exportButton = document.querySelector("#export-button");
@@ -2088,6 +2089,10 @@ function renderReading(reading, values, options = {}) {
   currentState = collectState(values);
   currentState.language = reading.language;
   syncShareUrl(currentState);
+
+  if (seoAccordion) {
+    seoAccordion.open = false;
+  }
 
   renderBadges([
     reading.badgePetLabel,
