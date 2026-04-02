@@ -7,11 +7,11 @@
   },
   uiCopy: {
     ko: {
-      pageTitle: "강아지 사주·고양이 사주 | 멍냥 사주 기질 카드",
-      pageDescription: "강아지 사주, 고양이 사주를 생일과 성격 키워드로 바로 확인하세요. 반려동물 기질, 집사 궁합, 돌봄 포인트를 한 장 카드로 정리해줍니다.",
+      pageTitle: "강아지 사주, 고양이 사주 보는 곳 | 멍냥 사주",
+      pageDescription: "생일, 품종, 성격 키워드로 우리 집 강아지와 고양이의 사주 결과를 바로 확인해보세요. 성향, 집사 궁합, 돌봄 포인트를 귀엽고 간단한 카드로 보여줘요.",
       ogSiteName: "멍냥 사주",
-      ogTitle: "우리 집 강아지·고양이 사주, 지금 바로 뽑아보세요 | 멍냥 사주",
-      ogDescription: "생일, 품종, 성격 키워드만 넣으면 반려동물 기질과 집사 궁합이 바로 나와요. 저장하고 공유하기 좋은 카드형 결과.",
+      ogTitle: "우리 집 강아지·고양이 사주, 바로 뽑아보세요 | 멍냥 사주",
+      ogDescription: "생일, 품종, 성격 키워드만 넣으면 사주 결과와 집사 궁합을 카드로 바로 확인할 수 있어요. 저장해서 공유하기도 쉬워요.",
       ogImageAlt: "멍냥 사주 링크 미리보기 이미지",
       fallbackGuardian: "집사",
       brand: { aria: "멍냥 사주", subtitle: "강아지와 고양이를 위한 사주 카드", chip: "강아지 · 고양이" },
@@ -122,11 +122,11 @@
       }
     },
     en: {
-      pageTitle: "Dog & Cat Saju | Mungnyang Vibe Card",
-      pageDescription: "Check your dog or cat's vibe card from birthday and temperament hints. Natural tendencies, human chemistry, and care cues come together in one quick read.",
+      pageTitle: "Dog & Cat Saju Readings | Mungnyang Saju",
+      pageDescription: "Check your dog's or cat's saju result from birthday, breed, and temperament hints. Natural tendencies, chemistry, and care cues come together in one simple card.",
       ogSiteName: "Mungnyang Saju",
-      ogTitle: "Try your dog's or cat's vibe card now | Mungnyang Saju",
-      ogDescription: "Add birthday, breed, and temperament hints to get a shareable pet vibe card with chemistry and lucky cues.",
+      ogTitle: "Try your dog's or cat's saju now | Mungnyang Saju",
+      ogDescription: "Add birthday, breed, and temperament hints to get a shareable pet saju result card with chemistry and care cues.",
       ogImageAlt: "Mungnyang Saju social preview image",
       fallbackGuardian: "Guardian",
       brand: { aria: "Mungnyang Saju", subtitle: "Playful saju cards for dogs and cats", chip: "Dogs · Cats" },
@@ -237,11 +237,11 @@
       }
     },
     ja: {
-      pageTitle: "わんこ・にゃんこサジュ | 멍냥 사주 気質カード",
-      pageDescription: "誕生日や性格キーワードから、うちの子の気質や相性、お世話のヒントを一枚のカードで気軽にチェックできます。",
+      pageTitle: "わんこ・にゃんこサジュを見るなら | 멍냥 사주",
+      pageDescription: "誕生日、品種、性格キーワードから、うちの子のサジュ結果や相性、お世話のヒントをすぐにチェックできます。",
       ogSiteName: "멍냥 사주",
-      ogTitle: "うちの子のサジュ風カードを今すぐチェック | 멍냥 사주",
-      ogDescription: "誕生日、品種、性格キーワードを入れると、気質や相性をかわいく整理したカードがすぐ見られます。",
+      ogTitle: "うちの子のサジュを今すぐチェック | 멍냥 사주",
+      ogDescription: "誕生日、品種、性格キーワードを入れると、サジュ結果や相性をカードですぐに確認できます。",
       ogImageAlt: "멍냥 사주 のリンクプレビュー画像",
       fallbackGuardian: "保護者",
       brand: { aria: "멍냥 사주", subtitle: "わんこ・にゃんこのためのサジュ風カード", chip: "わんこ · にゃんこ" },
