@@ -657,6 +657,37 @@ const seasonMood = {
   autumn: "가을기운이 겹쳐 섬세함과 균형감이 도드라지는 편이라 표정과 취향이 또렷하게 읽혀요.",
   winter: "겨울기운이 겹쳐 신중함과 감정 깊이가 선명한 편이라 마음의 결이 오래 여운을 남겨요."
 };
+const breedEmojiMap = {
+  "maltese": "🎀",
+  "toy-poodle": "🐩",
+  "bichon-frise": "☁️",
+  "pomeranian": "🦊",
+  "chihuahua": "💫",
+  "yorkshire-terrier": "🎩",
+  "shih-tzu": "🛋️",
+  "miniature-dachshund": "🌭",
+  "welsh-corgi": "🍞",
+  "shiba-inu": "🍂",
+  "beagle": "👃",
+  "miniature-schnauzer": "🧂",
+  "cocker-spaniel": "🎗️",
+  "border-collie": "🎯",
+  "jindo": "🛡️",
+  "french-bulldog": "🥐",
+  "golden-retriever": "🌼",
+  "labrador-retriever": "🦴",
+  "samoyed": "❄️",
+  "siberian-husky": "🧊",
+  "german-shepherd": "🐕‍🦺",
+  "mixed-dog": "🐾",
+  "korean-shorthair": "🐱",
+  "russian-blue": "🩶",
+  "persian": "👑",
+  "ragdoll": "🧸",
+  "bengal": "🐆",
+  "scottish-fold": "🌙",
+  "mixed-cat": "🐾"
+};
 const timeProfiles = {
   dawn: {
     label: "새벽 태생",
@@ -960,9 +991,17 @@ function getBreedProfile(type, value) {
   return breedCatalog[type].find((item) => item.value === value) || breedCatalog[type][0];
 }
 
+function getBreedEmoji(value) {
+  return breedEmojiMap[value] || "🐾";
+}
+
+function formatBreedOptionLabel(breed) {
+  return `${getBreedEmoji(breed.value)} ${breed.label}`;
+}
+
 function renderBreedPreview(type, value) {
   const breed = getBreedProfileLocalized(type, value, currentLanguage);
-  breedNamePreview.textContent = breed.label;
+  breedNamePreview.textContent = formatBreedOptionLabel(breed);
   breedCopy.textContent = breed.preview;
 }
 
@@ -987,7 +1026,7 @@ function updateBreedOptions(type, preferredValue) {
     breeds.forEach((breed) => {
       const option = document.createElement("option");
       option.value = breed.value;
-      option.textContent = breed.label;
+      option.textContent = formatBreedOptionLabel(breed);
       container.append(option);
     });
 
