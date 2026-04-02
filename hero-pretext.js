@@ -12,6 +12,7 @@ if (!heroCopy || !heroHeading || !heroStage || !heroCanvas || !heroOrb || !heroC
 } else {
   const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   const finePointerQuery = window.matchMedia("(pointer: fine)");
+  const coarsePointerQuery = window.matchMedia("(pointer: coarse)");
   const mobileQuery = window.matchMedia("(max-width: 680px)");
   const preparedCache = new Map();
   const state = {
@@ -23,6 +24,10 @@ if (!heroCopy || !heroHeading || !heroStage || !heroCanvas || !heroOrb || !heroC
   };
 
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+  function shouldUseHeroPretext() {
+    return !mobileQuery.matches && !coarsePointerQuery.matches;
+  }
 
   function getHeroText() {
     const parts = Array.from(heroHeading.querySelectorAll(".hero-line"))
@@ -195,6 +200,13 @@ if (!heroCopy || !heroHeading || !heroStage || !heroCanvas || !heroOrb || !heroC
   }
 
   function render() {
+    if (!shouldUseHeroPretext()) {
+      heroCopy.classList.remove("hero-pretext-ready");
+      cancelAnimation();
+      return;
+    }
+
+    heroCopy.classList.add("hero-pretext-ready");
     const width = Math.max(320, Math.floor(heroCopy.clientWidth));
     const layout = buildLayout(width);
     heroStage.style.height = `${layout.stageHeight}px`;
@@ -257,7 +269,6 @@ if (!heroCopy || !heroHeading || !heroStage || !heroCanvas || !heroOrb || !heroC
   }
 
   function mount() {
-    heroCopy.classList.add("hero-pretext-ready");
     render();
   }
 
@@ -289,6 +300,11 @@ if (!heroCopy || !heroHeading || !heroStage || !heroCanvas || !heroOrb || !heroC
   heroStage.addEventListener("pointerleave", resetTargets);
   window.addEventListener("resize", render);
   reducedMotionQuery.addEventListener("change", resetTargets);
+  coarsePointerQuery.addEventListener("change", () => {
+    preparedCache.clear();
+    resetTargets();
+    render();
+  });
   mobileQuery.addEventListener("change", () => {
     preparedCache.clear();
     resetTargets();
@@ -618,4 +634,45 @@ mountSecondaryPretext(document.querySelector("#rhythm-title"), {
   shadowColor: "rgba(122, 211, 195, 0.14)",
   minHeight: (width) => (secondaryMobileQuery.matches ? clampValue(width * 0.18, 48, 84) : clampValue(width * 0.15, 52, 90)),
   maxHeight: (width) => (secondaryMobileQuery.matches ? clampValue(width * 0.3, 74, 118) : clampValue(width * 0.28, 80, 126))
+});
+
+const sectionHeadingTargets = [
+  { selector: "#form-section-title", endColor: "#ff7a55", shadowColor: "rgba(255, 217, 128, 0.18)" },
+  { selector: "#result-section-title", endColor: "#48bba6", shadowColor: "rgba(122, 211, 195, 0.16)" },
+  { selector: "#seo-section-title", endColor: "#ff7a55", shadowColor: "rgba(255, 217, 128, 0.18)" },
+  { selector: "#faq-section-title", endColor: "#48bba6", shadowColor: "rgba(122, 211, 195, 0.16)" }
+];
+
+sectionHeadingTargets.forEach(({ selector, endColor, shadowColor }) => {
+  mountSecondaryPretext(document.querySelector(selector), {
+    shellClass: "section-pretext-shell",
+    orb: false,
+    minWidth: 180,
+    desktopFontScale: 0.046,
+    mobileFontScale: 0.065,
+    desktopMinFont: 24,
+    desktopMaxFont: 34,
+    mobileMinFont: 21,
+    mobileMaxFont: 28,
+    desktopPaddingX: 10,
+    mobilePaddingX: 8,
+    desktopPaddingTop: 8,
+    mobilePaddingTop: 6,
+    desktopPaddingBottom: 8,
+    mobilePaddingBottom: 6,
+    desktopOrbRadius: () => 0,
+    mobileOrbRadius: () => 0,
+    orbX: 0,
+    orbY: 0,
+    minWidthRatio: 1,
+    lineHeight: 1.04,
+    lineNudge: 2,
+    startColor: "#2f261f",
+    midColor: "#2f261f",
+    endColor,
+    midStop: 0.86,
+    shadowColor,
+    minHeight: (width) => (secondaryMobileQuery.matches ? clampValue(width * 0.16, 44, 84) : clampValue(width * 0.11, 46, 86)),
+    maxHeight: (width) => (secondaryMobileQuery.matches ? clampValue(width * 0.42, 76, 154) : clampValue(width * 0.24, 84, 152))
+  });
 });
