@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://pet-saju.pages.dev/sitemap.xml
+Sitemap: https://pet-saju.taxijjang.com/sitemap.xml

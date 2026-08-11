@@ -55,7 +55,7 @@ let currentReading = null;
 let currentState = null;
 let currentLanguage = "ko";
 const buttonDefaultLabels = new Map();
-const siteUrl = "https://pet-saju.pages.dev/";
+const siteUrl = "https://pet-saju.taxijjang.com/";
 const exportQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=${encodeURIComponent(siteUrl)}`;
 const i18n = window.DANGNYANG_I18N;
 const translatableNodes = document.querySelectorAll("[data-i18n]");
