@@ -123,7 +123,21 @@
         faq2Q: "태어난 시간을 모르면 결과가 많이 달라지나요?",
         faq2A: "시간을 비워도 결과를 볼 수 있어요. 생일, 품종, 성격 키워드만으로도 기본 기질과 집사 궁합, 돌봄 포인트는 충분히 자연스럽게 정리됩니다.",
         faq3Q: "강아지와 고양이 모두 사용할 수 있나요?",
-        faq3A: "네. 강아지와 고양이 모두 지원하고, 품종 설명과 문장 풀이도 각각 다르게 적용돼서 반려견 사주와 반려묘 사주를 한 사이트에서 가볍게 볼 수 있습니다."
+        faq3A: "네. 강아지와 고양이 모두 지원하고, 품종 설명과 문장 풀이도 각각 다르게 적용돼서 반려견 사주와 반려묘 사주를 한 사이트에서 가볍게 볼 수 있습니다.",
+        basicsEyebrow: "사주 기초",
+        basicsTitle: "사주는 원래 네 개의 기둥이에요",
+        basicsBody: "사주팔자(四柱八字)는 태어난 해, 달, 날, 시간을 네 개의 기둥으로 세우고 각 기둥에 두 글자를 붙여 여덟 글자로 읽는 방식입니다. 여기에 나무, 불, 흙, 금속, 물의 다섯 기운(오행)이 어떻게 섞였는지를 보고 성향을 풀이합니다. 태어난 시간을 사주에서 중요하게 보는 이유가 네 기둥 중 하나를 차지하기 때문이에요.",
+        unknownEyebrow: "생일을 모를 때",
+        unknownTitle: "유기견·유기묘 입양이라면 이렇게",
+        unknownBody: "보호소에서 온 아이는 정확한 생일을 모르는 경우가 많습니다. 병원에서 추정해준 나이가 있으면 그 기준으로 연도를 잡고, 없다면 처음 만난 날을 넣어보세요. 어차피 가볍게 보는 카드이니 우리 집에 온 날을 생일로 삼는 것도 충분히 좋은 방법입니다.",
+        faq4Q: "같은 정보를 넣으면 결과도 같나요?",
+        faq4A: "같은 생일, 품종, 키워드를 넣으면 같은 결과가 나옵니다. 무작위로 뽑는 것이 아니라 입력값을 바탕으로 계산하기 때문이에요. 대신 성격 키워드를 바꾸면 문장 풀이가 달라지니, 우리 아이에게 더 맞는 키워드로 다시 해보는 것도 재미있습니다.",
+        faq5Q: "입력한 정보가 서버에 저장되나요?",
+        faq5A: "생일과 키워드는 결과를 만드는 동안 브라우저 안에서만 쓰이고, 별도 회원가입이나 자체 데이터베이스 없이 동작합니다. 다만 광고와 방문 통계는 외부 서비스의 정책을 따릅니다.",
+        faq6Q: "믹스견이거나 품종을 모르면 어떻게 하나요?",
+        faq6A: "가장 비슷해 보이는 품종을 골라도 되고, 잘 모르겠으면 성격 키워드 쪽에 더 신경 써서 채워보세요. 품종은 기본 분위기를 잡는 재료일 뿐이고, 실제 생활감은 키워드가 더 많이 반영합니다.",
+        faq7Q: "결과를 건강이나 훈련 판단에 써도 되나요?",
+        faq7A: "아니요. 이 카드는 재미로 보는 콘텐츠이고 의학적·행동학적 근거가 있는 진단이 아닙니다. 식욕이 줄거나 갑자기 공격성이 생기는 등 실제로 걱정되는 변화가 보이면 수의사나 행동 전문가와 상담하세요."
       }
     },
     en: {
@@ -243,7 +257,21 @@
         faq2Q: "What if I do not know the exact birth time?",
         faq2A: "You can leave it blank. The reading still works from birthday, breed, and temperament keywords, and the overall tone stays stable even without an exact time.",
         faq3Q: "Can I use it for both dogs and cats?",
-        faq3A: "Yes. The site supports both dogs and cats, and the breed and copy pools shift so each result feels closer to a pet's actual vibe."
+        faq3A: "Yes. The site supports both dogs and cats, and the breed and copy pools shift so each result feels closer to a pet's actual vibe.",
+        basicsEyebrow: "Saju basics",
+        basicsTitle: "Saju is built from four pillars",
+        basicsBody: "Saju palja (四柱八字) sets up the year, month, day, and hour of birth as four pillars, assigns two characters to each, and reads the resulting eight characters. The mix of five energies — wood, fire, earth, metal, and water — is then used to describe temperament. The hour of birth matters because it occupies one of those four pillars.",
+        unknownEyebrow: "No known birthday",
+        unknownTitle: "For rescues and shelter adoptions",
+        unknownBody: "Pets from a shelter often have no exact birthday. If a vet estimated an age, use that to pick the year; if not, try the day you first met. This is a light-hearted card, so treating your adoption day as the birthday works perfectly well.",
+        faq4Q: "Does the same input always give the same result?",
+        faq4A: "Yes. The same birthday, breed, and keywords produce the same result, because the output is derived from your input rather than drawn at random. Changing the temperament keywords does change the wording, so it is worth retrying with keywords that fit your pet better.",
+        faq5Q: "Is the information I enter stored on a server?",
+        faq5A: "The birthday and keywords are used inside your browser while the result is generated, and the site runs without accounts or its own database. Advertising and traffic analytics still follow the policies of those external services.",
+        faq6Q: "What if my pet is a mix or the breed is unknown?",
+        faq6A: "Pick the closest-looking breed, or if you really cannot tell, put more care into the temperament keywords. Breed only sets the broad tone — the keywords carry far more of how your pet actually behaves.",
+        faq7Q: "Can I use the result for health or training decisions?",
+        faq7A: "No. This card is entertainment, not a diagnosis with medical or behavioral grounding. If you notice a change that genuinely worries you, such as reduced appetite or sudden aggression, consult a veterinarian or a behavior professional."
       }
     },
     ja: {
@@ -363,7 +391,21 @@
         faq2Q: "生まれた時間がわからないと大きく変わりますか？",
         faq2A: "時間が空欄でも結果は見られます。誕生日、品種、性格キーワードだけでも、基本の気質や相性、お世話のヒントは十分自然にまとまります。",
         faq3Q: "犬と猫の両方に使えますか？",
-        faq3A: "はい。犬と猫の両方に対応していて、品種の説明や文章のトーンもそれぞれ切り替わるので、同じサイトで気軽に見比べられます。"
+        faq3A: "はい。犬と猫の両方に対応していて、品種の説明や文章のトーンもそれぞれ切り替わるので、同じサイトで気軽に見比べられます。",
+        basicsEyebrow: "四柱推命の基本",
+        basicsTitle: "サジュは四つの柱でできています",
+        basicsBody: "四柱八字（サジュパルジャ）は、生まれた年・月・日・時刻を四つの柱として立て、それぞれに二文字を割り当てて合計八文字で読む方法です。そこに木・火・土・金・水という五つの気（五行）がどう混ざっているかを見て性質を読み解きます。生まれた時刻が重視されるのは、四つの柱のうち一つを占めているからです。",
+        unknownEyebrow: "誕生日が分からないとき",
+        unknownTitle: "保護犬・保護猫を迎えた場合",
+        unknownBody: "保護施設から来た子は、正確な誕生日が分からないことが多いです。動物病院で推定年齢を教えてもらっていればその年を基準にし、なければ初めて出会った日を入れてみてください。気軽に楽しむカードなので、お家に来た日を誕生日として扱うのも十分よい方法です。",
+        faq4Q: "同じ情報を入れると結果も同じですか？",
+        faq4A: "はい。同じ誕生日・品種・キーワードなら同じ結果になります。ランダムに選ぶのではなく、入力内容から計算しているためです。性格キーワードを変えると文章は変わるので、うちの子に合うキーワードで試し直すのも楽しいです。",
+        faq5Q: "入力した情報はサーバーに保存されますか？",
+        faq5A: "誕生日やキーワードは結果を作る間だけブラウザ内で使われ、会員登録や独自のデータベースなしで動きます。ただし広告やアクセス解析は、それぞれの外部サービスの方針に従います。",
+        faq6Q: "ミックスや品種が分からない場合は？",
+        faq6A: "一番近そうな品種を選んでも大丈夫ですし、分からなければ性格キーワードのほうを丁寧に埋めてみてください。品種は全体の雰囲気を決める材料にすぎず、実際の様子はキーワードのほうが強く反映されます。",
+        faq7Q: "結果を健康やしつけの判断に使えますか？",
+        faq7A: "いいえ。このカードは楽しむためのもので、医学的・行動学的な根拠のある診断ではありません。食欲が落ちる、急に攻撃的になるなど本当に気になる変化があれば、獣医師や行動の専門家に相談してください。"
       }
     }
   },
